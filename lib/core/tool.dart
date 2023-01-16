@@ -1,0 +1,4 @@
+enum Tool {
+  pen,
+  eraser,
+}
