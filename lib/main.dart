@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import "widgets/whiteboard.dart";
 import "widgets/toolbar.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import 'package:gehenna/providers/board.dart';
 
 void main() {
-  runApp(AppContext());
+  runApp(
+    const ProviderScope(
+      child: AppContext(),
+    ),
+  );
 }
 
 class AppContext extends StatefulWidget {
@@ -20,7 +26,7 @@ class _AppContextState extends State<AppContext> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gehenna',
-      theme: ThemeData.light(),
+      theme: ThemeData(),
       home: Scaffold(
         body: Column(
           children: const [

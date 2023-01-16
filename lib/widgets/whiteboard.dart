@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gehenna/providers/board.dart';
 import 'package:gehenna/widgets/toolbar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Stroke {
   Stroke(this.points, this.color, this.width);
@@ -10,24 +12,25 @@ class Stroke {
   final double width;
 }
 
-class WhiteBoard extends StatefulWidget {
+class WhiteBoard extends ConsumerStatefulWidget {
   const WhiteBoard({super.key});
 
   @override
-  State<WhiteBoard> createState() => _CanvasState();
+  ConsumerState<WhiteBoard> createState() => _WhiteBoardState();
 }
 
-class _CanvasState extends State<WhiteBoard> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  final _lines = <Stroke>[]; // list of strokes
+class _WhiteBoardState extends ConsumerState<WhiteBoard> {
   final lineStreamController = StreamController<List<Stroke>>.broadcast();
   final currentLineStreamController = StreamController<Stroke>.broadcast();
 
-  Color _currentColor = Colors.black;
+  late Color _currentColor;
+
+  @override
+  void initState() {
+    super.initState();
+    // listen to pen color changes
+    _currentColor = ref.read(boardProvider).penColor;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,60 +48,47 @@ class _CanvasState extends State<WhiteBoard> {
                   details.globalPosition.dx,
                   details.globalPosition.dy,
                 ),
-                items: const [
-                  PopupMenuItem(
-                    child: Text("Red"),
-                    value: Colors.red,
-                  ),
-                  PopupMenuItem(
-                    child: Text("Blue"),
-                    value: Colors.blue,
-                  ),
-                  PopupMenuItem(
-                    child: Text("Green"),
-                    value: Colors.green,
-                  ),
-                  PopupMenuItem(
-                    child: Text("Black"),
-                    value: Colors.black,
-                  ),
-                ],
-              ).then((value) {
-                if (value != null) {
-                  setState(() {
-                    _currentColor = value;
-                  });
-                }
-              });
+                // button
+                items: [],
+              );
             },
             onPanStart: (details) {
               setState(() {
-                _lines.add(Stroke([details.localPosition], _currentColor, 2.0));
+                ref.read(boardProvider).addStroke(Stroke(
+                      [details.localPosition],
+                      _currentColor,
+                      ref.read(boardProvider).penWidth,
+                    ));
               });
             },
             onPanUpdate: (details) {
               setState(() {
-                _lines.last.points.add(details.localPosition);
+                ref.read(boardProvider).addStroke(Stroke(
+                      [details.localPosition],
+                      _currentColor,
+                      ref.read(boardProvider).penWidth,
+                    ));
               });
             },
             onPanEnd: (details) => setState(() {
-              _lines.last.points.add(Offset.zero);
+              //ref.read(strokeProvider).last.points.add(Offset.zero);
+              ref.read(boardProvider).addStroke(Stroke(
+                    [Offset.zero],
+                    _currentColor,
+                    ref.read(boardProvider).penWidth,
+                  ));
             }),
             child: GridPaper(
-              color: Color.fromARGB(255, 219, 219, 219),
+              color: const Color.fromARGB(255, 219, 219, 219),
               interval: 200,
               subdivisions: 5,
               child: RepaintBoundary(
                 child: Container(
                   color: Colors.transparent,
-                  child: StreamBuilder<Stroke>(
-                      stream: currentLineStreamController.stream,
-                      builder: ((context, snapshot) {
-                        return CustomPaint(
-                          painter: Painter(_lines),
-                          child: Container(),
-                        );
-                      })),
+                  child: CustomPaint(
+                    painter: Painter(ref.watch(boardProvider).strokes),
+                    child: Container(),
+                  ),
                 ),
               ),
             ),
@@ -107,7 +97,7 @@ class _CanvasState extends State<WhiteBoard> {
         Positioned(
           bottom: MediaQuery.of(context).size.height * 0.5,
           left: 20,
-          child: Toolbar(),
+          child: const Toolbar(),
         )
       ],
     );
@@ -127,6 +117,7 @@ class Painter extends CustomPainter {
 
     for (var stroke in points) {
       paint.color = stroke.color;
+      print(paint.color);
       paint.strokeWidth = stroke.width;
       for (var i = 0; i < stroke.points.length - 1; i++) {
         if (stroke.points[i] != Offset.zero &&
