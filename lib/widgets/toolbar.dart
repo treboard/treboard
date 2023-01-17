@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gehenna/core/tool.dart';
-import 'package:gehenna/providers/board.dart';
+import 'package:gehenna/providers/board_provider.dart';
+import 'package:gehenna/widgets/color_bar.dart';
 
 class Toolbar extends ConsumerStatefulWidget {
   const Toolbar({super.key});
@@ -33,14 +34,17 @@ class _ToolbarState extends ConsumerState<Toolbar> {
           child: Column(
             children: [
               IconButton(
+                tooltip: 'Change pen tool',
                 icon: Icon(ref.read(boardProvider).tool.getIcon()),
                 onPressed: () {},
               ),
               IconButton(
+                tooltip: 'Evaluate canvas expression',
                 icon: const Icon(Icons.format_shapes_outlined),
                 onPressed: () {},
               ),
               IconButton(
+                tooltip: 'Clear canvas',
                 icon: const Icon(Icons.cleaning_services_outlined),
                 onPressed: () {
                   // clear the board

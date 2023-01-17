@@ -5,13 +5,12 @@ import 'package:gehenna/widgets/whiteboard.dart';
 
 class BoardProvider extends ChangeNotifier {
   Tool tool = Tool(ToolType.pen);
-  Color penColor;
+  Color penColor = Colors.black;
   double penWidth;
   List<Stroke> strokes = <Stroke>[];
   List<Stroke> undoCache = <Stroke>[];
 
   BoardProvider({
-    this.penColor = Colors.black,
     this.penWidth = 2.0,
   });
 

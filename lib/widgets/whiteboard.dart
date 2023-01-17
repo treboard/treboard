@@ -1,9 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:gehenna/providers/board.dart';
+import 'package:gehenna/providers/board_provider.dart';
+import 'package:gehenna/providers/node_provider.dart';
+import 'package:gehenna/widgets/color_bar.dart';
+import 'package:gehenna/widgets/node.dart';
 import 'package:gehenna/widgets/toolbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:gehenna/widgets/nodes/note.dart';
 
 class Stroke {
   Stroke(this.points, this.color, this.width);
@@ -20,20 +25,17 @@ class WhiteBoard extends ConsumerStatefulWidget {
 }
 
 class _WhiteBoardState extends ConsumerState<WhiteBoard> {
-  late Color _currentColor;
   final initScale = 0.1;
   double offsetThreshold = 0.1;
-
-  @override
-  void initState() {
-    super.initState();
-    // listen to pen color changes
-    _currentColor = ref.read(boardProvider).penColor;
-  }
+  MouseCursor cursor = SystemMouseCursors.grab;
+  // CustomNodes include Text, Expression, Image, etc.
+  // Only Text is implemented for now
+  // Text is a widget that can be dragged around the board
 
   @override
   Widget build(BuildContext context) {
     List<Stroke> strokes = ref.watch(boardProvider).strokes;
+    ref.watch(nodeProvider).nodes;
 
     return Stack(
       children: [
@@ -44,21 +46,34 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
             onSecondaryTapDown: (details) {
               // display context menu
               showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(
-                  details.globalPosition.dx,
-                  details.globalPosition.dy,
-                  details.globalPosition.dx,
-                  details.globalPosition.dy,
-                ),
-                // button
-                items: [],
-              );
+                  context: context,
+                  position: RelativeRect.fromLTRB(
+                      details.globalPosition.dx,
+                      details.globalPosition.dy,
+                      details.globalPosition.dx + 1,
+                      details.globalPosition.dy + 1),
+                  items: const [
+                    PopupMenuItem(
+                      value: 1,
+                      child: Text('Add Note'),
+                    ),
+                  ]).then((value) {
+                if (value == 1) {
+                  // add a new CustomNode
+                  ref.read(nodeProvider).addNode(
+                        CustomNode(
+                          position: details.localPosition,
+                          child: Note(),
+                        ),
+                      );
+                }
+              });
             },
             onPanStart: (details) {
+              cursor = SystemMouseCursors.grabbing;
               ref.watch(boardProvider).addStroke(Stroke(
                     [details.localPosition],
-                    _currentColor,
+                    ref.watch(boardProvider).penColor,
                     ref.watch(boardProvider).penWidth,
                   ));
             },
@@ -88,11 +103,16 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
             ),
           ),
         ),
+
+        // display CustomNodes
+        ...ref.read(nodeProvider).nodes,
         Positioned(
           bottom: MediaQuery.of(context).size.height * 0.5,
           left: 20,
           child: const Toolbar(),
-        )
+        ),
+
+        ColorBar(),
       ],
     );
   }

@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import "widgets/whiteboard.dart";
 import "widgets/toolbar.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import 'package:gehenna/providers/board.dart';
+import 'package:gehenna/providers/board_provider.dart';
 
 void main() {
   runApp(
@@ -26,15 +26,13 @@ class _AppContextState extends State<AppContext> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gehenna',
-      theme: ThemeData(),
-      home: Scaffold(
-        body: Column(
-          children: [
-            Expanded(
-              child: WhiteBoard(),
-            ),
-          ],
-        ),
+      theme: ThemeData(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+      ),
+      home: const Scaffold(
+        body: WhiteBoard(),
       ),
     );
   }
