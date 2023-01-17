@@ -36,6 +36,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               IconButton(
                 tooltip: 'Change pen tool',
                 icon: Icon(ref.read(boardProvider).tool.getIcon()),
+                color: ref.watch(boardProvider).penColor,
                 onPressed: () {},
               ),
               IconButton(

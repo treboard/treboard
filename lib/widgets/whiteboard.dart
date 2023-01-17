@@ -107,12 +107,12 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
         // display CustomNodes
         ...ref.read(nodeProvider).nodes,
         Positioned(
-          bottom: MediaQuery.of(context).size.height * 0.5,
+          bottom: MediaQuery.of(context).size.height / 2 - (2 * 20 + 40),
           left: 20,
           child: const Toolbar(),
         ),
 
-        ColorBar(),
+        const ColorBar(),
       ],
     );
   }

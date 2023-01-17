@@ -9,6 +9,7 @@ class PenColor {
 
 List<PenColor> penColors = [
 // set of 29 colors in rainbow order
+  PenColor(Colors.black),
   PenColor(Colors.red),
   PenColor(Colors.orange),
   PenColor(Colors.yellow),
@@ -27,6 +28,7 @@ List<PenColor> penColors = [
   PenColor(const Color.fromRGBO(255, 255, 0, 1)),
   PenColor(const Color.fromRGBO(191, 255, 0, 1)),
   PenColor(const Color.fromRGBO(127, 255, 0, 1)),
+  PenColor(Colors.white),
 ];
 
 @immutable
