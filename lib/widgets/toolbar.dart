@@ -42,7 +42,10 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               ),
               IconButton(
                 icon: const Icon(Icons.cleaning_services_outlined),
-                onPressed: () {},
+                onPressed: () {
+                  // clear the board
+                  ref.read(boardProvider.notifier).clear();
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.settings),
@@ -77,7 +80,10 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               ),
               IconButton(
                 icon: const Icon(Icons.redo_outlined),
-                onPressed: () {},
+                onPressed: () {
+                  // redo the last stroke
+                  ref.read(boardProvider.notifier).redo();
+                },
               ),
             ],
           ),

@@ -29,7 +29,7 @@ class _AppContextState extends State<AppContext> {
       theme: ThemeData(),
       home: Scaffold(
         body: Column(
-          children: const [
+          children: [
             Expanded(
               child: WhiteBoard(),
             ),

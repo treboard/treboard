@@ -8,7 +8,7 @@ class BoardProvider extends ChangeNotifier {
   Color penColor;
   double penWidth;
   List<Stroke> strokes = <Stroke>[];
-  List<Stroke> cache = <Stroke>[];
+  List<Stroke> undoCache = <Stroke>[];
 
   BoardProvider({
     this.penColor = Colors.black,
@@ -17,17 +17,16 @@ class BoardProvider extends ChangeNotifier {
 
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
-
-    // add to cache
-    if (cache.length > 10) {
-      cache.removeAt(0);
-    }
-    cache.add(stroke);
-
+    undoCache.clear();
     notifyListeners();
   }
 
-  // clear cache
+  void addPoint(Offset point) {
+    strokes.last.points.add(point);
+    notifyListeners();
+  }
+
+  // clear undoCache
   void setTool(Tool tool) {
     this.tool = tool;
     notifyListeners();
@@ -44,18 +43,27 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void undo() {
-    if (strokes.isNotEmpty) {
-      strokes.removeLast();
-      notifyListeners();
+    if (undoCache.length > 10) {
+      undoCache.removeAt(0);
     }
+    if (strokes.isNotEmpty) {
+      undoCache.add(strokes.removeLast());
+    }
+
+    notifyListeners();
   }
 
   void redo() {
-    if (cache.isNotEmpty) {
-      strokes.add(cache.last);
-      cache.removeLast();
-      notifyListeners();
+    if (undoCache.isNotEmpty) {
+      strokes.add(undoCache.removeLast());
     }
+    notifyListeners();
+  }
+
+  void clear() {
+    strokes.clear();
+
+    notifyListeners();
   }
 }
 

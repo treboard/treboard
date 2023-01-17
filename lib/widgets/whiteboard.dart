@@ -20,10 +20,9 @@ class WhiteBoard extends ConsumerStatefulWidget {
 }
 
 class _WhiteBoardState extends ConsumerState<WhiteBoard> {
-  final lineStreamController = StreamController<List<Stroke>>.broadcast();
-  final currentLineStreamController = StreamController<Stroke>.broadcast();
-
   late Color _currentColor;
+  final initScale = 0.1;
+  double offsetThreshold = 0.1;
 
   @override
   void initState() {
@@ -34,9 +33,13 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   @override
   Widget build(BuildContext context) {
+    List<Stroke> strokes = ref.watch(boardProvider).strokes;
+
     return Stack(
       children: [
         InteractiveViewer(
+          minScale: 0.1,
+          maxScale: 30,
           child: GestureDetector(
             onSecondaryTapDown: (details) {
               // display context menu
@@ -53,31 +56,22 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               );
             },
             onPanStart: (details) {
-              setState(() {
-                ref.read(boardProvider).addStroke(Stroke(
-                      [details.localPosition],
-                      _currentColor,
-                      ref.read(boardProvider).penWidth,
-                    ));
-              });
+              ref.watch(boardProvider).addStroke(Stroke(
+                    [details.localPosition],
+                    _currentColor,
+                    ref.watch(boardProvider).penWidth,
+                  ));
             },
             onPanUpdate: (details) {
-              setState(() {
-                ref.read(boardProvider).addStroke(Stroke(
-                      [details.localPosition],
-                      _currentColor,
-                      ref.read(boardProvider).penWidth,
-                    ));
-              });
+              // add a new point to the current stroke
+              if (details.delta.distance > offsetThreshold) {
+                ref.watch(boardProvider).addPoint(details.localPosition);
+              }
             },
-            onPanEnd: (details) => setState(() {
-              //ref.read(strokeProvider).last.points.add(Offset.zero);
-              ref.read(boardProvider).addStroke(Stroke(
-                    [Offset.zero],
-                    _currentColor,
-                    ref.read(boardProvider).penWidth,
-                  ));
-            }),
+            onPanEnd: (details) {
+              // add a new point to the current stroke
+              ref.watch(boardProvider).addPoint(Offset.zero);
+            },
             child: GridPaper(
               color: const Color.fromARGB(255, 219, 219, 219),
               interval: 200,
@@ -86,7 +80,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                 child: Container(
                   color: Colors.transparent,
                   child: CustomPaint(
-                    painter: Painter(ref.watch(boardProvider).strokes),
+                    painter: Painter(strokes),
                     child: Container(),
                   ),
                 ),
@@ -117,7 +111,6 @@ class Painter extends CustomPainter {
 
     for (var stroke in points) {
       paint.color = stroke.color;
-      print(paint.color);
       paint.strokeWidth = stroke.width;
       for (var i = 0; i < stroke.points.length - 1; i++) {
         if (stroke.points[i] != Offset.zero &&
