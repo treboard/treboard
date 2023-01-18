@@ -3,6 +3,7 @@ import 'package:gehenna/core/tool.dart';
 import 'package:gehenna/providers/board_provider.dart';
 import 'package:gehenna/providers/node_provider.dart';
 import 'package:gehenna/widgets/color_bar.dart';
+import 'package:gehenna/widgets/extractor.dart';
 import 'package:gehenna/widgets/node.dart';
 import 'package:gehenna/widgets/toolbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -125,6 +126,8 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
         ),
 
         const ColorBar(),
+
+        Positioned(child: TextExtractor())
       ],
     );
   }

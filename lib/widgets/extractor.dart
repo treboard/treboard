@@ -1,62 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TextExtractor extends StatefulWidget {
+import '../providers/board_provider.dart';
+
+import 'resizable.dart';
+
+class TextExtractor extends ConsumerStatefulWidget {
   @override
   _TextExtractorState createState() => _TextExtractorState();
 }
 
-class _TextExtractorState extends State<TextExtractor> {
+class _TextExtractorState extends ConsumerState<TextExtractor> {
   Offset _startPoint = Offset.zero;
   Offset _endPoint = Offset.zero;
+  bool _isFraming = false;
+
+  Rect get _frame {
+    return Rect.fromPoints(_startPoint, _endPoint);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPressStart: (details) {
-        setState(() {
-          _startPoint = details.localPosition;
-        });
-      },
-      onLongPressMoveUpdate: (details) {
-        setState(() {
-          _endPoint = details.localPosition;
-        });
-      },
-      onLongPressEnd: (details) {
-        setState(() {
-          _startPoint = details.localPosition;
-          _endPoint = details.localPosition;
-        });
-      },
-      child: CustomPaint(
-        painter: TextExtractionPainter(_startPoint, _endPoint),
-        child: Container(),
+    return Visibility(
+      visible: ref.watch(boardProvider).isFraming,
+      child: ResizebleWidget(
+        child: Container(
+          width: ref.watch(boardProvider).frameRect.width,
+          height: ref.watch(boardProvider).frameRect.height,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: Colors.redAccent, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+        ),
       ),
     );
-  }
-}
-
-class TextExtractionPainter extends CustomPainter {
-  TextExtractionPainter(this.startPoint, this.endPoint);
-
-  final Offset startPoint;
-  final Offset endPoint;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (startPoint != null && endPoint != null) {
-      var paint = Paint()
-        ..color = Colors.red
-        ..strokeWidth = 3;
-
-      var rect = Rect.fromPoints(startPoint, endPoint);
-      canvas.drawRect(rect, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(TextExtractionPainter oldDelegate) {
-    return startPoint != oldDelegate.startPoint ||
-        endPoint != oldDelegate.endPoint;
   }
 }

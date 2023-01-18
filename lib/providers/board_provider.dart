@@ -9,6 +9,14 @@ class BoardProvider extends ChangeNotifier {
   double penWidth;
   List<Stroke> strokes = <Stroke>[];
   List<Stroke> undoCache = <Stroke>[];
+  bool isFraming = false;
+
+// default to center
+  Rect frameRect = Rect.fromCenter(
+    center: Offset(0, 0),
+    width: 100,
+    height: 100,
+  );
 
   BoardProvider({
     this.penWidth = 2.0,
@@ -17,6 +25,11 @@ class BoardProvider extends ChangeNotifier {
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
     undoCache.clear();
+    notifyListeners();
+  }
+
+  void setFrameRect(Rect rect) {
+    frameRect = rect;
     notifyListeners();
   }
 
@@ -42,6 +55,11 @@ class BoardProvider extends ChangeNotifier {
 
   void setPenColor(Color color) {
     penColor = color;
+    notifyListeners();
+  }
+
+  void extractText() {
+    isFraming = true;
     notifyListeners();
   }
 

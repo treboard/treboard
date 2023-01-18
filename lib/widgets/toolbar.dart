@@ -43,8 +43,8 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               ),
               IconButton(
                 tooltip: 'Eraser tool',
-                icon: Icon(Icons.delete_outline_outlined),
-                color: ref.watch(boardProvider).penColor,
+                icon: const Icon(Icons.delete_outline_outlined),
+                color: ThemeData.dark().canvasColor,
                 onPressed: () {
                   ref.watch(boardProvider).tool = EraserTool();
                 },
@@ -52,7 +52,10 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               IconButton(
                 tooltip: 'Evaluate canvas expression',
                 icon: const Icon(Icons.format_shapes_outlined),
-                onPressed: () {},
+                onPressed: () {
+                  ref.watch(boardProvider).tool = ExtractorTool();
+                  ref.watch(boardProvider).extractText();
+                },
               ),
               IconButton(
                 tooltip: 'Clear canvas',

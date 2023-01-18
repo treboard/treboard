@@ -66,5 +66,7 @@ class ExtractorTool extends Tool {
   void use(BoardProvider provider, dynamic details) {
     // text extractor widget that shows rectangle around region based on drag.
     // when drag ends, text is extracted and displayed in a note widget
+
+    if (details is DragStartDetails) {}
   }
 }
