@@ -34,10 +34,20 @@ class _ToolbarState extends ConsumerState<Toolbar> {
           child: Column(
             children: [
               IconButton(
-                tooltip: 'Change pen tool',
+                tooltip: 'Pen tool',
                 icon: Icon(ref.read(boardProvider).tool.getIcon()),
                 color: ref.watch(boardProvider).penColor,
-                onPressed: () {},
+                onPressed: () {
+                  ref.watch(boardProvider).tool = PenTool();
+                },
+              ),
+              IconButton(
+                tooltip: 'Eraser tool',
+                icon: Icon(Icons.delete_outline_outlined),
+                color: ref.watch(boardProvider).penColor,
+                onPressed: () {
+                  ref.watch(boardProvider).tool = EraserTool();
+                },
               ),
               IconButton(
                 tooltip: 'Evaluate canvas expression',

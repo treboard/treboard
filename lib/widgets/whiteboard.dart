@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:gehenna/core/tool.dart';
 import 'package:gehenna/providers/board_provider.dart';
 import 'package:gehenna/providers/node_provider.dart';
 import 'package:gehenna/widgets/color_bar.dart';
@@ -15,6 +14,10 @@ class Stroke {
   final List<Offset> points;
   final Color color;
   final double width;
+
+  bool isWithinDistance(Offset point) {
+    return points.last.distance < 10;
+  }
 }
 
 class WhiteBoard extends ConsumerStatefulWidget {
@@ -34,69 +37,78 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   @override
   Widget build(BuildContext context) {
-    List<Stroke> strokes = ref.watch(boardProvider).strokes;
+    WidgetRef strokeRef = ref;
     ref.watch(nodeProvider).nodes;
+    Tool tool = ref.watch(boardProvider).tool;
 
     return Stack(
       children: [
-        InteractiveViewer(
-          minScale: 0.1,
-          maxScale: 30,
-          child: GestureDetector(
-            onSecondaryTapDown: (details) {
-              // display context menu
-              showMenu(
-                  context: context,
-                  position: RelativeRect.fromLTRB(
-                      details.globalPosition.dx,
-                      details.globalPosition.dy,
-                      details.globalPosition.dx + 1,
-                      details.globalPosition.dy + 1),
-                  items: const [
-                    PopupMenuItem(
-                      value: 1,
-                      child: Text('Add Note'),
+        Container(
+          decoration: BoxDecoration(),
+          child: InteractiveViewer(
+            boundaryMargin: EdgeInsets.all(200),
+            minScale: 0.1,
+            maxScale: 30,
+            child: GestureDetector(
+              onSecondaryTapDown: (details) {
+                // display context menu
+
+                showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                        details.globalPosition.dx,
+                        details.globalPosition.dy,
+                        details.globalPosition.dx + 1,
+                        details.globalPosition.dy + 1),
+                    items: const [
+                      PopupMenuItem(
+                        value: 1,
+                        child: Text('Add Note'),
+                      ),
+                    ]).then((value) {
+                  if (value == 1) {
+                    // add a new CustomNode
+                    ref.read(nodeProvider).addNode(
+                          CustomNode(
+                            position: details.localPosition,
+                            child: Note(),
+                          ),
+                        );
+                  }
+                });
+              },
+              onPanStart: (details) {
+                ref
+                    .watch(boardProvider)
+                    .tool
+                    .use(ref.watch(boardProvider), details);
+              },
+              onPanUpdate: (details) {
+                // add a new point to the current stroke
+
+                ref
+                    .watch(boardProvider)
+                    .tool
+                    .use(ref.watch(boardProvider), details);
+              },
+              onPanEnd: (details) {
+                // add a new point to the current stroke
+                ref
+                    .watch(boardProvider)
+                    .tool
+                    .use(ref.watch(boardProvider), details);
+              },
+              child: GridPaper(
+                color: const Color.fromARGB(255, 219, 219, 219),
+                interval: 200,
+                subdivisions: 5,
+                child: RepaintBoundary(
+                  child: Container(
+                    color: Colors.transparent,
+                    child: CustomPaint(
+                      painter: Painter(strokeRef.watch(boardProvider).strokes),
+                      child: Container(),
                     ),
-                  ]).then((value) {
-                if (value == 1) {
-                  // add a new CustomNode
-                  ref.read(nodeProvider).addNode(
-                        CustomNode(
-                          position: details.localPosition,
-                          child: Note(),
-                        ),
-                      );
-                }
-              });
-            },
-            onPanStart: (details) {
-              cursor = SystemMouseCursors.grabbing;
-              ref.watch(boardProvider).addStroke(Stroke(
-                    [details.localPosition],
-                    ref.watch(boardProvider).penColor,
-                    ref.watch(boardProvider).penWidth,
-                  ));
-            },
-            onPanUpdate: (details) {
-              // add a new point to the current stroke
-              if (details.delta.distance > offsetThreshold) {
-                ref.watch(boardProvider).addPoint(details.localPosition);
-              }
-            },
-            onPanEnd: (details) {
-              // add a new point to the current stroke
-              ref.watch(boardProvider).addPoint(Offset.zero);
-            },
-            child: GridPaper(
-              color: const Color.fromARGB(255, 219, 219, 219),
-              interval: 200,
-              subdivisions: 5,
-              child: RepaintBoundary(
-                child: Container(
-                  color: Colors.transparent,
-                  child: CustomPaint(
-                    painter: Painter(strokes),
-                    child: Container(),
                   ),
                 ),
               ),

@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gehenna/providers/board_provider.dart';
+import 'package:gehenna/widgets/whiteboard.dart';
+import 'package:gehenna/widgets/extractor.dart';
+
+enum ToolGroup {
+  pen,
+  utility,
+}
 
 enum ToolType {
   pen,
@@ -7,18 +16,10 @@ enum ToolType {
 
 // create an enum that maps a tooltype to an icon
 class Tool {
-  Tool(this.type);
-  final ToolType type;
+  Tool();
 
-  static final Map<ToolType, Tool> tools = {
-    ToolType.pen: Tool(ToolType.pen),
-    ToolType.eraser: Tool(ToolType.eraser),
-  };
-
-  static final List<Tool> toolList = [
-    Tool(ToolType.pen),
-    Tool(ToolType.eraser),
-  ];
+  final ToolType type = ToolType.pen;
+  void use(BoardProvider provider, dynamic details) {}
 
   // get icon given a tooltype
   IconData getIcon() {
@@ -28,5 +29,42 @@ class Tool {
       case ToolType.eraser:
         return Icons.cleaning_services_outlined;
     }
+  }
+}
+
+class PenTool extends Tool {
+  @override
+  void use(BoardProvider provider, dynamic details) {
+    if (details is DragStartDetails) {
+      provider.addStroke(Stroke(
+        [details.localPosition],
+        provider.penColor,
+        provider.penWidth,
+      ));
+    } else if (details is DragUpdateDetails) {
+      provider.addPoint(details.localPosition);
+    } else {
+      provider.addPoint(Offset.zero);
+    }
+  }
+}
+
+class EraserTool extends Tool {
+  @override
+  void use(BoardProvider provider, dynamic details) {
+    // when the user drags, iterate through all strokes and remove any that intersect with the drag within a bounds
+    if (details is DragStartDetails) {
+      provider.removeStroke(details.localPosition);
+    } else if (details is DragUpdateDetails) {
+      provider.removeStroke(details.localPosition);
+    }
+  }
+}
+
+class ExtractorTool extends Tool {
+  @override
+  void use(BoardProvider provider, dynamic details) {
+    // text extractor widget that shows rectangle around region based on drag.
+    // when drag ends, text is extracted and displayed in a note widget
   }
 }

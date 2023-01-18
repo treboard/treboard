@@ -4,7 +4,7 @@ import 'package:gehenna/core/tool.dart';
 import 'package:gehenna/widgets/whiteboard.dart';
 
 class BoardProvider extends ChangeNotifier {
-  Tool tool = Tool(ToolType.pen);
+  Tool tool = PenTool();
   Color penColor = Colors.black;
   double penWidth;
   List<Stroke> strokes = <Stroke>[];
@@ -17,6 +17,15 @@ class BoardProvider extends ChangeNotifier {
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
     undoCache.clear();
+    notifyListeners();
+  }
+
+  void removeStroke(Offset point) {
+    strokes.removeWhere((stroke) {
+      return stroke.points.any((p) {
+        return (p - point).distance < 10;
+      });
+    });
     notifyListeners();
   }
 
