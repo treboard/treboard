@@ -5,20 +5,14 @@ import '../providers/board_provider.dart';
 
 import 'resizable.dart';
 
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+
 class TextExtractor extends ConsumerStatefulWidget {
   @override
   _TextExtractorState createState() => _TextExtractorState();
 }
 
 class _TextExtractorState extends ConsumerState<TextExtractor> {
-  Offset _startPoint = Offset.zero;
-  Offset _endPoint = Offset.zero;
-  bool _isFraming = false;
-
-  Rect get _frame {
-    return Rect.fromPoints(_startPoint, _endPoint);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Visibility(
@@ -39,6 +33,18 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
                 offset: const Offset(0, 3),
               ),
             ],
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.transparent,
+              shadowColor: Colors.transparent,
+              alignment: Alignment.bottomCenter,
+            ),
+            onPressed: () {
+              ref.watch(boardProvider).toggleFrame();
+              ref.watch(boardProvider).extractText();
+            },
+            child: const Text('Extract'),
           ),
         ),
       ),

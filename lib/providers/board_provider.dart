@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:gehenna/core/tool.dart';
@@ -6,14 +7,18 @@ import 'package:gehenna/widgets/whiteboard.dart';
 class BoardProvider extends ChangeNotifier {
   Tool tool = PenTool();
   Color penColor = Colors.black;
-  double penWidth;
+  double penWidth = 2.0;
   List<Stroke> strokes = <Stroke>[];
   List<Stroke> undoCache = <Stroke>[];
   bool isFraming = false;
+  Uint8List? canvasImage;
+  double boardScale = 1.0;
+
+  Offset _previousOffset = Offset.zero;
 
 // default to center
   Rect frameRect = Rect.fromCenter(
-    center: Offset(0, 0),
+    center: Offset(50, 50),
     width: 100,
     height: 100,
   );
@@ -21,6 +26,25 @@ class BoardProvider extends ChangeNotifier {
   BoardProvider({
     this.penWidth = 2.0,
   });
+
+  double get scale => boardScale;
+  void setScale(double scale) {
+    boardScale = scale;
+    notifyListeners();
+  }
+
+  Offset get previousOffset => _previousOffset;
+  set setPreviousOffset(Offset offset) => _previousOffset = offset;
+
+  void saveFrame(Uint8List image) {
+    canvasImage = image;
+    notifyListeners();
+  }
+
+  void toggleFrame() {
+    isFraming = !isFraming;
+    notifyListeners();
+  }
 
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
@@ -36,7 +60,7 @@ class BoardProvider extends ChangeNotifier {
   void removeStroke(Offset point) {
     strokes.removeWhere((stroke) {
       return stroke.points.any((p) {
-        return (p - point).distance < 10;
+        return (p - point).distance < 20;
       });
     });
     notifyListeners();
@@ -50,6 +74,10 @@ class BoardProvider extends ChangeNotifier {
   // clear undoCache
   void setTool(Tool tool) {
     this.tool = tool;
+    // check if tool is not extractor
+    if (tool is! ExtractorTool) {
+      isFraming = false;
+    }
     notifyListeners();
   }
 
@@ -69,11 +97,13 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void undo() {
-    if (undoCache.length > 10) {
-      undoCache.removeAt(0);
-    }
+    // limit undo to 10
     if (strokes.isNotEmpty) {
       undoCache.add(strokes.removeLast());
+    }
+
+    if (undoCache.length > 10) {
+      undoCache.removeAt(0);
     }
 
     notifyListeners();
