@@ -12,9 +12,6 @@ class BoardProvider extends ChangeNotifier {
   List<Stroke> undoCache = <Stroke>[];
   bool isFraming = false;
   Uint8List? canvasImage;
-  double boardScale = 1.0;
-
-  Offset _previousOffset = Offset.zero;
 
 // default to center
   Rect frameRect = Rect.fromCenter(
@@ -26,15 +23,6 @@ class BoardProvider extends ChangeNotifier {
   BoardProvider({
     this.penWidth = 2.0,
   });
-
-  double get scale => boardScale;
-  void setScale(double scale) {
-    boardScale = scale;
-    notifyListeners();
-  }
-
-  Offset get previousOffset => _previousOffset;
-  set setPreviousOffset(Offset offset) => _previousOffset = offset;
 
   void saveFrame(Uint8List image) {
     canvasImage = image;
@@ -48,6 +36,7 @@ class BoardProvider extends ChangeNotifier {
 
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
+
     undoCache.clear();
     notifyListeners();
   }

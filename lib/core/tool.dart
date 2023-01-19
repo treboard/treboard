@@ -33,7 +33,6 @@ class Tool {
 }
 
 class PenTool extends Tool {
-  double pointThreshold = 0.05;
   @override
   void use(BoardProvider provider, dynamic details) {
     if (details is DragStartDetails) {
@@ -43,15 +42,8 @@ class PenTool extends Tool {
         provider.penWidth,
       ));
     } else if (details is DragUpdateDetails) {
-      var adjustedThreshold = pointThreshold / provider.scale;
-      if (details.delta.distanceSquared > adjustedThreshold) {
-        // take the board scale into account
-        double scale = provider.scale;
-        provider.addPoint(details.localPosition);
-      }
-    } else if (details is DragEndDetails) {
-      provider.addPoint(Offset.zero);
-    }
+      provider.addPoint(details.localPosition);
+    } else if (details is DragEndDetails) {}
   }
 }
 
