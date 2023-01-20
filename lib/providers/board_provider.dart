@@ -14,11 +14,7 @@ class BoardProvider extends ChangeNotifier {
   Uint8List? canvasImage;
 
 // default to center
-  Rect frameRect = Rect.fromCenter(
-    center: Offset(50, 50),
-    width: 100,
-    height: 100,
-  );
+  Rect? frameRect = null;
 
   BoardProvider({
     this.penWidth = 2.0,
@@ -31,13 +27,13 @@ class BoardProvider extends ChangeNotifier {
 
   void toggleFrame() {
     isFraming = !isFraming;
+    frameRect = null;
     notifyListeners();
   }
 
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
 
-    undoCache.clear();
     notifyListeners();
   }
 
@@ -48,8 +44,9 @@ class BoardProvider extends ChangeNotifier {
 
   void removeStroke(Offset point) {
     strokes.removeWhere((stroke) {
+      undoCache.add(stroke);
       return stroke.points.any((p) {
-        return (p - point).distance < 20;
+        return (p - point).distance < 10;
       });
     });
     notifyListeners();

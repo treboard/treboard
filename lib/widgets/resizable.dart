@@ -20,6 +20,8 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
   double top = 0;
   double left = 0;
 
+  // create a new Rect object to represent the area of the resizable widget
+  Rect get rect => Rect.fromLTWH(left, top, width, height);
   void onDrag(double dx, double dy) {
     var newHeight = height + dy;
     var newWidth = width + dx;
@@ -28,10 +30,6 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
       height = newHeight > 0 ? newHeight : 0;
       width = newWidth > 0 ? newWidth : 0;
     });
-
-    ref
-        .watch(boardProvider)
-        .setFrameRect(Rect.fromLTRB(left, top, left + width, top + height));
   }
 
   @override
@@ -64,6 +62,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top + mid;
                 left = left + mid;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -79,6 +78,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 height = newHeight > 0 ? newHeight : 0;
                 top = top + dy;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -99,6 +99,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top - mid;
                 left = left - mid;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -113,6 +114,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
               setState(() {
                 width = newWidth > 0 ? newWidth : 0;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -133,6 +135,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top - mid;
                 left = left - mid;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -147,6 +150,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
               setState(() {
                 height = newHeight > 0 ? newHeight : 0;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -167,6 +171,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top - mid;
                 left = left - mid;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -182,6 +187,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 width = newWidth > 0 ? newWidth : 0;
                 left = left + dx;
               });
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -195,6 +201,8 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top + dy;
                 left = left + dx;
               });
+
+              ref.watch(boardProvider).setFrameRect(rect);
             },
           ),
         ),

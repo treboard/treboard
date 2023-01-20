@@ -1,7 +1,3 @@
-import 'dart:async';
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gehenna/core/tool.dart';
 import 'package:gehenna/providers/board_provider.dart';
@@ -31,8 +27,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
   final initScale = 0.1;
   double offsetThreshold = 0.1;
   MouseCursor cursor = SystemMouseCursors.grab;
-  PictureRecorder recorder = PictureRecorder();
-  Canvas mainCanvas = Canvas(PictureRecorder());
+  GlobalKey _repaintBoundaryKey = GlobalKey();
 
   Offset oldFocalPoint = Offset.zero;
 
@@ -53,6 +48,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
     return Stack(
       children: [
         InteractiveViewer(
+          maxScale: 10,
           boundaryMargin: EdgeInsets.all(double.infinity),
           child: GestureDetector(
             onSecondaryTapDown: (details) {
@@ -110,12 +106,13 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               interval: 200,
               subdivisions: 5,
               child: RepaintBoundary(
+                key: _repaintBoundaryKey,
                 child: Container(
                   color: Colors.transparent,
                   child: CustomPaint(
                     painter: Painter(
                       strokeRef.watch(boardProvider).strokes,
-                      mainCanvas,
+                      ref.watch(boardProvider).frameRect ?? Rect.zero,
                     ),
                     child: Container(),
                   ),
@@ -142,13 +139,11 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 }
 
 class Painter extends CustomPainter {
-  Painter(this.points, this.canvas);
+  Painter(this.points, this.rect);
   final List<Stroke> points;
-
-  final Canvas canvas;
-
+  Rect? rect;
   @override
-  void paint(canvas, Size size) {
+  void paint(Canvas canvas, Size size) async {
     void drawStrokes(Paint paint) {
       for (Stroke stroke in points) {
         paint.color = stroke.color;
@@ -166,9 +161,10 @@ class Painter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5.0;
 
-    // canvas.drawPicture(picture);
-
     drawStrokes(paint);
+    if (rect != null) {
+      canvas.drawRect(rect!, paint);
+    }
   }
 
   @override
