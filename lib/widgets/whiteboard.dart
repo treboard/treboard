@@ -27,7 +27,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
   final initScale = 0.1;
   double offsetThreshold = 0.1;
   MouseCursor cursor = SystemMouseCursors.grab;
-  GlobalKey _repaintBoundaryKey = GlobalKey();
 
   Offset oldFocalPoint = Offset.zero;
 
@@ -106,7 +105,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               interval: 200,
               subdivisions: 5,
               child: RepaintBoundary(
-                key: _repaintBoundaryKey,
+                key: ref.watch(boardProvider).repaintBoundaryKey,
                 child: Container(
                   color: Colors.transparent,
                   child: CustomPaint(
@@ -162,9 +161,6 @@ class Painter extends CustomPainter {
       ..strokeWidth = 5.0;
 
     drawStrokes(paint);
-    if (rect != null) {
-      canvas.drawRect(rect!, paint);
-    }
   }
 
   @override

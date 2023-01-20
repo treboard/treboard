@@ -6,9 +6,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gehenna/providers/node_provider.dart';
 import 'package:gehenna/widgets/node.dart';
+import 'package:gehenna/widgets/nodes/note.dart';
 import 'dart:ui' as ui;
 import '../providers/board_provider.dart';
 import 'package:http/http.dart';
+
+import 'package:path/path.dart';
 
 import 'resizable.dart';
 
@@ -28,27 +31,40 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
     visible = ref.read(boardProvider).isFraming;
   }
 
-  GlobalKey _repaintBoundaryKey = GlobalKey();
   TextEditingController _extractionController = TextEditingController();
   bool visible = false;
 
-  void requestOCR() {
-    processImage();
-  }
-
   void processImage() async {
     // convert repaintBoundary to Image
-    RenderRepaintBoundary boundary = _repaintBoundaryKey.currentContext!
+    RenderRepaintBoundary boundary = ref
+        .watch(boardProvider)
+        .repaintBoundaryKey
+        .currentContext!
         .findRenderObject() as RenderRepaintBoundary;
 
     // convert RenderRepaintBoundary to Image
-    ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    ui.Image image = await boundary.toImage(pixelRatio: 1.0);
+
+    Image converted = Image.memory(
+        (await image.toByteData(format: ui.ImageByteFormat.png))!
+            .buffer
+            .asUint8List());
+
+    ref.watch(nodeProvider).addNode(CustomNode(
+        child: Image(image: converted.image), position: const Offset(0, 0)));
+    // save image as test
+    // add node with image
 
     // convert Image to ByteData
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-    requestOCR();
+    var text = await processOCR(pngBytes);
+    print(text);
+
+    ref
+        .read(nodeProvider)
+        .addNode(CustomNode(position: const Offset(0, 0), child: Text(text)));
   }
 
   @override
@@ -57,7 +73,6 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
       visible: ref.watch(boardProvider).isFraming,
       child: ResizebleWidget(
         child: RepaintBoundary(
-          key: _repaintBoundaryKey,
           child: Container(
             width: ref.watch(boardProvider).frameRect?.width,
             height: ref.watch(boardProvider).frameRect?.height,

@@ -12,6 +12,7 @@ class BoardProvider extends ChangeNotifier {
   List<Stroke> undoCache = <Stroke>[];
   bool isFraming = false;
   Uint8List? canvasImage;
+  GlobalKey _repaintBoundaryKey = GlobalKey();
 
 // default to center
   Rect? frameRect = null;
@@ -19,6 +20,8 @@ class BoardProvider extends ChangeNotifier {
   BoardProvider({
     this.penWidth = 2.0,
   });
+
+  get repaintBoundaryKey => _repaintBoundaryKey;
 
   void saveFrame(Uint8List image) {
     canvasImage = image;

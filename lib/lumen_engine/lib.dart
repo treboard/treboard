@@ -1,19 +1,23 @@
-import 'dart:ffi' as ffi;
+import 'dart:convert';
 import 'dart:io';
-import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
 
-// pub extern "C" fn processOCR(image: *const u8, length: usize) -> *const u8
+Future<String> processOCR(Uint8List pngData) async {
+  String baseUrl = "http://127.0.0.1:8000/process_image/";
+  //async def process_image(pngData: bytes = File(...)):
 
-typedef ocr_func = ffi.Pointer<ffi.Uint8> Function(
-    ffi.Pointer<ffi.Uint8>, ffi.Int32);
-
-void processOCR(Uint8List image, int size) {
-  var libraryPath =
-      path.join(Directory.current.path, 'lib/lumen_engine', 'liblumen.so');
-
-  final dylib = ffi.DynamicLibrary.open(libraryPath);
-
-  final processImage = dylib.lookup<ffi.NativeFunction<ocr_func>>('processOCR');
+  // send request to api
+  var request = http.MultipartRequest('POST', Uri.parse(baseUrl));
+  request.files.add(
+    http.MultipartFile.fromBytes(
+      'pngData',
+      pngData,
+      filename: 'image.png',
+    ),
+  );
+  var response = await request.send();
+  // get response
+  var text = await response.stream.bytesToString();
+  return jsonDecode(text)["text"];
 }
