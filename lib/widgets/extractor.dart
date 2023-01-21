@@ -31,7 +31,6 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
     visible = ref.read(boardProvider).isFraming;
   }
 
-  TextEditingController _extractionController = TextEditingController();
   bool visible = false;
 
   void processImage() async {
@@ -43,28 +42,20 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
         .findRenderObject() as RenderRepaintBoundary;
 
     // convert RenderRepaintBoundary to Image
-    ui.Image image = await boundary.toImage(pixelRatio: 1.0);
+    // Rect to be cropped
 
-    Image converted = Image.memory(
-        (await image.toByteData(format: ui.ImageByteFormat.png))!
-            .buffer
-            .asUint8List());
-
-    ref.watch(nodeProvider).addNode(CustomNode(
-        child: Image(image: converted.image), position: const Offset(0, 0)));
+    ui.Image image = await boundary.toImage(pixelRatio: 0.2);
     // save image as test
     // add node with image
 
     // convert Image to ByteData
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List pngBytes = byteData!.buffer.asUint8List();
-
     var text = await processOCR(pngBytes);
-    print(text);
 
-    ref
-        .read(nodeProvider)
-        .addNode(CustomNode(position: const Offset(0, 0), child: Text(text)));
+    ref.read(nodeProvider).addNode(CustomNode(
+        position: const Offset(50, 50),
+        child: Text(text, style: const TextStyle(fontSize: 20))));
   }
 
   @override

@@ -104,10 +104,10 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               color: Color.fromARGB(255, 162, 162, 162),
               interval: 200,
               subdivisions: 5,
-              child: RepaintBoundary(
-                key: ref.watch(boardProvider).repaintBoundaryKey,
-                child: Container(
-                  color: Colors.transparent,
+              child: Container(
+                color: Colors.transparent,
+                child: RepaintBoundary(
+                  key: ref.watch(boardProvider).repaintBoundaryKey,
                   child: CustomPaint(
                     painter: Painter(
                       strokeRef.watch(boardProvider).strokes,
