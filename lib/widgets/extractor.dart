@@ -25,12 +25,6 @@ class TextExtractor extends ConsumerStatefulWidget {
 }
 
 class _TextExtractorState extends ConsumerState<TextExtractor> {
-  @override
-  void initState() {
-    super.initState();
-    visible = ref.read(boardProvider).isFraming;
-  }
-
   bool visible = false;
 
   void processImage() async {
@@ -51,12 +45,14 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
     // convert Image to ByteData
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List pngBytes = byteData!.buffer.asUint8List();
-    var text = await processOCR(pngBytes);
-
+    //var text = await processOCR(pngBytes);
+    var text = "not implemented yet";
     ref.read(nodeProvider).addNode(CustomNode(
         position: const Offset(50, 50),
         child: Text(text, style: const TextStyle(fontSize: 20))));
   }
+
+  // make not visible
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +83,7 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
                 alignment: Alignment.bottomCenter,
               ),
               onPressed: () {
+                ref.read(boardProvider).isFraming = false;
                 processImage();
               },
               child: const Text(''),

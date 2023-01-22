@@ -62,7 +62,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top + mid;
                 left = left + mid;
               });
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -78,7 +78,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 height = newHeight > 0 ? newHeight : 0;
                 top = top + dy;
               });
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -114,7 +114,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
               setState(() {
                 width = newWidth > 0 ? newWidth : 0;
               });
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -135,7 +135,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top - mid;
                 left = left - mid;
               });
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -150,7 +150,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
               setState(() {
                 height = newHeight > 0 ? newHeight : 0;
               });
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -171,7 +171,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 top = top - mid;
                 left = left - mid;
               });
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -187,7 +187,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 width = newWidth > 0 ? newWidth : 0;
                 left = left + dx;
               });
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),
@@ -202,7 +202,7 @@ class _ResizebleWidgetState extends ConsumerState<ResizebleWidget> {
                 left = left + dx;
               });
 
-              ref.watch(boardProvider).setFrameRect(rect);
+              ref.read(boardProvider).setFrameRect(rect);
             },
           ),
         ),

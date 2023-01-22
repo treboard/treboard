@@ -29,7 +29,9 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void toggleFrame() {
-    isFraming = !isFraming;
+    if (isFraming) {
+      isFraming = false;
+    }
     frameRect = null;
     notifyListeners();
   }
@@ -37,6 +39,11 @@ class BoardProvider extends ChangeNotifier {
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
 
+    notifyListeners();
+  }
+
+  void setPenSize(double size) {
+    penWidth = size;
     notifyListeners();
   }
 

@@ -14,8 +14,17 @@ class Toolbar extends ConsumerStatefulWidget {
 }
 
 class _ToolbarState extends ConsumerState<Toolbar> {
+  List<bool> selected = [true, false, false, false];
+
   @override
   Widget build(BuildContext context) {
+    List<Icon> buttons = [
+      Icon(ref.read(boardProvider).tool.getIcon()),
+      const Icon(Icons.delete_outline_outlined),
+      const Icon(Icons.format_shapes_outlined),
+      const Icon(Icons.cleaning_services_outlined),
+      // restart here then delete old code latger
+    ];
     return Column(
       children: [
         Container(
@@ -31,57 +40,41 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               ),
             ],
           ),
-          child: Column(
-            children: [
-              IconButton(
-                tooltip: 'Pen tool',
-                icon: Icon(ref.read(boardProvider).tool.getIcon()),
-                color: ref.watch(boardProvider).penColor,
-                onPressed: () {
-                  ref.watch(boardProvider).tool = PenTool();
-                },
-              ),
-              IconButton(
-                tooltip: 'Eraser tool',
-                icon: const Icon(Icons.delete_outline_outlined),
-                color: ThemeData.dark().canvasColor,
-                onPressed: () {
-                  ref.watch(boardProvider).tool = EraserTool();
-                },
-              ),
-              IconButton(
-                tooltip: 'Evaluate canvas expression',
-                icon: const Icon(Icons.format_shapes_outlined),
-                onPressed: () {
-                  ref.watch(boardProvider).tool = ExtractorTool();
-                  ref.watch(boardProvider).extractText();
-                },
-              ),
-              IconButton(
-                tooltip: 'Clear canvas',
-                icon: const Icon(Icons.cleaning_services_outlined),
-                onPressed: () {
-                  // clear the board
-                  ref.read(boardProvider.notifier).clear();
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {},
-              ),
-            ],
-          ),
+          child: ToggleButtons(
+              direction: Axis.vertical,
+              isSelected: selected,
+              onPressed: (index) {
+                setState(() {
+                  for (int i = 0; i < selected.length; i++) {
+                    selected[i] = i == index;
+
+                    if (index != 2) {
+                      ref.read(boardProvider).toggleFrame();
+                    }
+                  }
+
+                  if (index == 0) {
+                    ref.read(boardProvider).tool = PenTool();
+                  } else if (index == 1) {
+                    ref.read(boardProvider).tool = EraserTool();
+                  } else if (index == 2) {
+                    ref.read(boardProvider).tool = ExtractorTool();
+                    ref.read(boardProvider).extractText();
+                  } else if (index == 3) {
+                    ref.read(boardProvider.notifier).clear();
+                  }
+                });
+              },
+              children: buttons),
         ),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -106,6 +99,28 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             ],
           ),
         ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Slider(
+            value: ref.watch(boardProvider).penWidth,
+            min: 1,
+            max: 50,
+            divisions: 4,
+            onChanged: (value) {
+              // change on exponential scale
+              ref.read(boardProvider.notifier).setPenWidth(value);
+            },
+          ),
+        )
       ],
     );
   }

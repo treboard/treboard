@@ -42,13 +42,12 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
   Widget build(BuildContext context) {
     WidgetRef strokeRef = ref;
     ref.watch(nodeProvider).nodes;
-    Tool tool = ref.watch(boardProvider).tool;
 
     return Stack(
       children: [
         InteractiveViewer(
           maxScale: 10,
-          boundaryMargin: EdgeInsets.all(double.infinity),
+          boundaryMargin: const EdgeInsets.all(double.infinity),
           child: GestureDetector(
             onSecondaryTapDown: (details) {
               // display context menu
@@ -81,7 +80,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               ref
                   .watch(boardProvider)
                   .tool
-                  .use(ref.watch(boardProvider), details);
+                  .use(ref.read(boardProvider), details);
             },
             onPanUpdate: (details) {
               // add a new point to the current stroke
@@ -89,14 +88,14 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               ref
                   .watch(boardProvider)
                   .tool
-                  .use(ref.watch(boardProvider), details);
+                  .use(ref.read(boardProvider), details);
             },
             onPanEnd: (details) {
               // add a new point to the current stroke
               ref
                   .watch(boardProvider)
                   .tool
-                  .use(ref.watch(boardProvider), details);
+                  .use(ref.read(boardProvider), details);
 
               // convert picture to Image
             },
@@ -107,10 +106,10 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               child: Container(
                 color: Colors.transparent,
                 child: RepaintBoundary(
-                  key: ref.watch(boardProvider).repaintBoundaryKey,
+                  key: ref.read(boardProvider).repaintBoundaryKey,
                   child: CustomPaint(
                     painter: Painter(
-                      strokeRef.watch(boardProvider).strokes,
+                      strokeRef.read(boardProvider).strokes,
                       ref.watch(boardProvider).frameRect ?? Rect.zero,
                     ),
                     child: Container(),
@@ -131,7 +130,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
         const ColorBar(),
 
-        Positioned(child: TextExtractor())
+        TextExtractor(),
       ],
     );
   }
