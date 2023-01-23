@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gehenna/core/tool.dart';
-import 'package:gehenna/providers/board_provider.dart';
-import 'package:gehenna/providers/node_provider.dart';
-import 'package:gehenna/widgets/color_bar.dart';
-import 'package:gehenna/widgets/extractor.dart';
-import 'package:gehenna/widgets/node.dart';
-import 'package:gehenna/widgets/toolbar.dart';
+import 'package:treboard/core/tool.dart';
+import 'package:treboard/providers/board_provider.dart';
+import 'package:treboard/providers/node_provider.dart';
+import 'package:treboard/widgets/color_bar.dart';
+import 'package:treboard/widgets/extractor.dart';
+import 'package:treboard/widgets/node.dart';
+import 'package:treboard/widgets/toolbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gehenna/widgets/nodes/note.dart';
+import 'package:treboard/widgets/nodes/note.dart';
 
 class Stroke {
   Stroke(this.points, this.color, this.width);
@@ -46,8 +46,9 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
     return Stack(
       children: [
         InteractiveViewer(
-          maxScale: 10,
-          boundaryMargin: const EdgeInsets.all(double.infinity),
+          //boundaryMargin: const EdgeInsets.all(double.infinity),
+          minScale: 0.1,
+
           child: GestureDetector(
             onSecondaryTapDown: (details) {
               // display context menu

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gehenna/providers/node_provider.dart';
+import 'package:treboard/providers/node_provider.dart';
 
 List<Color> colors = [
   Colors.blue,

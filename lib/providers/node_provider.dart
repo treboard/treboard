@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gehenna/widgets/nodes/note.dart';
-import 'package:gehenna/widgets/node.dart';
+import 'package:treboard/widgets/nodes/note.dart';
+import 'package:treboard/widgets/node.dart';
 
 class NodeProvider extends ChangeNotifier {
   List<CustomNode> nodes = <CustomNode>[];

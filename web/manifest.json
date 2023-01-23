@@ -1,6 +1,6 @@
 {
-    "name": "gehenna",
-    "short_name": "gehenna",
+    "name": "treboard",
+    "short_name": "treboard",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gehenna/core/tool.dart';
-import 'package:gehenna/providers/board_provider.dart';
-import 'package:gehenna/widgets/color_bar.dart';
+import 'package:treboard/core/tool.dart';
+import 'package:treboard/providers/board_provider.dart';
+import 'package:treboard/widgets/color_bar.dart';
 
 class Toolbar extends ConsumerStatefulWidget {
   const Toolbar({super.key});
@@ -113,7 +113,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
           child: Slider(
             value: ref.watch(boardProvider).penWidth,
             min: 1,
-            max: 50,
+            max: 20,
             divisions: 4,
             onChanged: (value) {
               // change on exponential scale

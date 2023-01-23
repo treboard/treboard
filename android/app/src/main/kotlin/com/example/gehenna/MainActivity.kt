@@ -1,4 +1,4 @@
-package com.example.gehenna
+package com.example.treboard
 
 import io.flutter.embedding.android.FlutterActivity
 

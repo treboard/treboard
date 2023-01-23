@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gehenna/providers/node_provider.dart';
-import 'package:gehenna/widgets/node.dart';
-import 'package:gehenna/widgets/nodes/note.dart';
+import 'package:treboard/providers/node_provider.dart';
+import 'package:treboard/widgets/node.dart';
+import 'package:treboard/widgets/nodes/note.dart';
 import 'dart:ui' as ui;
 import '../providers/board_provider.dart';
 import 'package:http/http.dart';
@@ -15,7 +15,7 @@ import 'package:path/path.dart';
 
 import 'resizable.dart';
 
-import 'package:gehenna/lumen_engine/lib.dart';
+import 'package:treboard/lumen_engine/lib.dart';
 
 class TextExtractor extends ConsumerStatefulWidget {
   TextExtractor({Key? key});

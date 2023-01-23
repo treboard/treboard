@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gehenna/providers/node_provider.dart';
+import 'package:treboard/providers/node_provider.dart';
 
 // TODO: implement note
 // An expression is a widget that displays a textbox containing a note

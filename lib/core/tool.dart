@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gehenna/providers/board_provider.dart';
-import 'package:gehenna/widgets/whiteboard.dart';
-import 'package:gehenna/widgets/extractor.dart';
+import 'package:treboard/providers/board_provider.dart';
+import 'package:treboard/widgets/whiteboard.dart';
+import 'package:treboard/widgets/extractor.dart';
 
 enum ToolGroup {
   pen,

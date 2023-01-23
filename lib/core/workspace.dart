@@ -1,4 +1,4 @@
-import 'package:gehenna/widgets/node.dart';
+import 'package:treboard/widgets/node.dart';
 
 class Document {
   Document({required this.nodes});

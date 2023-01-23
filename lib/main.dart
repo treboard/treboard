@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import "widgets/whiteboard.dart";
 import "widgets/toolbar.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import 'package:gehenna/providers/board_provider.dart';
+import 'package:treboard/providers/board_provider.dart';
 
 void main() {
   runApp(
@@ -25,7 +25,7 @@ class _AppContextState extends State<AppContext> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Gehenna',
+      title: 'TreBoard',
       theme: ThemeData(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,

@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import 'package:gehenna/core/tool.dart';
-import 'package:gehenna/widgets/whiteboard.dart';
+import 'package:treboard/core/tool.dart';
+import 'package:treboard/widgets/whiteboard.dart';
 
 class BoardProvider extends ChangeNotifier {
   Tool tool = PenTool();
