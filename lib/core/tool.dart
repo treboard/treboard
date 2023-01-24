@@ -39,6 +39,8 @@ class PenTool extends Tool {
         provider.penColor,
         provider.penWidth,
       ));
+
+      provider.addPoint(details.localPosition);
     } else if (details is DragUpdateDetails) {
       provider.addPoint(details.localPosition);
     } else if (details is DragEndDetails) {}
