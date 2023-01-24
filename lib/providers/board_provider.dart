@@ -5,6 +5,12 @@ import 'package:treboard/core/tool.dart';
 import 'package:treboard/models/batch.dart';
 import 'package:treboard/models/stroke.dart';
 
+enum DrawState {
+  idle,
+  drawing,
+  erasing,
+}
+
 class BoardProvider extends ChangeNotifier {
   Tool tool = PenTool();
   Color penColor = Colors.black;
@@ -13,6 +19,7 @@ class BoardProvider extends ChangeNotifier {
   bool isFraming = false;
   Uint8List? canvasImage;
   final GlobalKey _repaintBoundaryKey = GlobalKey();
+  DrawState state = DrawState.idle;
 
   List<StrokeBatch> undoCache = <StrokeBatch>[];
   List<StrokeBatch> redoCache = <StrokeBatch>[];
