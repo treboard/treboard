@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:treboard/core/shortcuts/shortcuts.dart';
-import 'package:treboard/core/tool.dart';
+import 'package:treboard/models/stroke_models.dart';
 import 'package:treboard/providers/board_provider.dart';
 import 'package:treboard/providers/node_provider.dart';
 import 'package:treboard/widgets/color_bar.dart';
@@ -10,25 +9,6 @@ import 'package:treboard/widgets/node.dart';
 import 'package:treboard/widgets/toolbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/widgets/nodes/note.dart';
-
-class Stroke {
-  Stroke(this.points, this.color, this.width);
-  final List<Offset> points;
-  final Color color;
-  final double width;
-
-  bool intersects(localPosition, double radius) {
-    // intersects within a adius of 10px
-    for (int i = 0; i < points.length; i++) {
-      Offset point = points[i];
-      if (point.dx - localPosition.dx < 10 &&
-          point.dy - localPosition.dy < 10) {
-        return true;
-      }
-    }
-    return false;
-  }
-}
 
 class WhiteBoard extends ConsumerStatefulWidget {
   const WhiteBoard({super.key});

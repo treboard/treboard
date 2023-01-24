@@ -2,12 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:treboard/core/tool.dart';
+import 'package:treboard/models/batch.dart';
+import 'package:treboard/models/stroke.dart';
 import 'package:treboard/widgets/whiteboard.dart';
-
-class StrokeBatch {
-  List<Stroke> strokes;
-  StrokeBatch(this.strokes);
-}
 
 class BoardProvider extends ChangeNotifier {
   Tool tool = PenTool();
@@ -16,7 +13,7 @@ class BoardProvider extends ChangeNotifier {
   List<Stroke> strokes = <Stroke>[];
   bool isFraming = false;
   Uint8List? canvasImage;
-  GlobalKey _repaintBoundaryKey = GlobalKey();
+  final GlobalKey _repaintBoundaryKey = GlobalKey();
 
   List<StrokeBatch> undoCache = <StrokeBatch>[];
   List<StrokeBatch> redoCache = <StrokeBatch>[];
@@ -46,7 +43,6 @@ class BoardProvider extends ChangeNotifier {
   void addStroke(Stroke stroke) {
     strokes.add(stroke);
     undoCache.add(StrokeBatch([stroke]));
-    redoCache.clear();
 
     notifyListeners();
   }
