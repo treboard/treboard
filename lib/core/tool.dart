@@ -52,26 +52,12 @@ class EraserTool extends Tool {
   void use(BoardProvider provider, dynamic details) {
     // when the user drags, iterate through all strokes and remove any that intersect with the drag within a bounds.
     // keep in mind that there is an undo batch cache
-    StrokeBatch batches = StrokeBatch([]);
 
-    if (details is DragStartDetails) {
-      for (Stroke stroke in provider.strokes) {
-        if (stroke.points.contains(details.localPosition)) {
-          batches.strokes.add(stroke);
-        }
-      }
-      provider.removeStroke(details.localPosition);
-    } else if (details is DragUpdateDetails) {
-      for (Stroke stroke in provider.strokes) {
-        if (stroke.points.contains(details.localPosition)) {
-          batches.strokes.add(stroke);
-        }
-      }
-      provider.removeStroke(details.localPosition);
+    if (details is DragStartDetails || details is DragUpdateDetails) {
+      provider.removeStroke(details.localPosition, 5);
     } else if (details is DragEndDetails) {
-      provider.addUndoBatch(
-        StrokeBatch(batches.strokes),
-      );
+      provider.addUndoBatch(StrokeBatch(provider.removedStrokes));
+      provider.removedStrokes.clear();
     }
   }
 }

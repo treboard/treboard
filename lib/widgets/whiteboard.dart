@@ -16,6 +16,18 @@ class Stroke {
   final List<Offset> points;
   final Color color;
   final double width;
+
+  bool intersects(localPosition, double radius) {
+    // intersects within a adius of 10px
+    for (int i = 0; i < points.length; i++) {
+      Offset point = points[i];
+      if (point.dx - localPosition.dx < 10 &&
+          point.dy - localPosition.dy < 10) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 class WhiteBoard extends ConsumerStatefulWidget {
