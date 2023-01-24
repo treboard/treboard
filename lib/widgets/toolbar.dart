@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/core/tool.dart';
 import 'package:treboard/providers/board_provider.dart';
-import 'package:treboard/widgets/color_bar.dart';
 
 class Toolbar extends ConsumerStatefulWidget {
   const Toolbar({super.key});
@@ -62,14 +61,18 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                     ref.read(boardProvider).extractText();
                   } else if (index == 3) {
                     ref.read(boardProvider.notifier).clear();
+                    selected = [true, false, false, false];
                   }
                 });
               },
               children: buttons),
         ),
         Container(
+          width: 50,
+          margin: const EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
             color: Colors.white,
+            borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
@@ -79,7 +82,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             ],
           ),
           // space between the two columns
-          margin: const EdgeInsets.symmetric(vertical: 10),
+
           child: Column(
             children: [
               IconButton(
@@ -99,28 +102,6 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             ],
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          child: Slider(
-            value: ref.watch(boardProvider).penWidth,
-            min: 1,
-            max: 20,
-            divisions: 4,
-            onChanged: (value) {
-              // change on exponential scale
-              ref.read(boardProvider.notifier).setPenWidth(value);
-            },
-          ),
-        )
       ],
     );
   }

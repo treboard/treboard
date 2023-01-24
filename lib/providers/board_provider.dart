@@ -4,16 +4,22 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:treboard/core/tool.dart';
 import 'package:treboard/widgets/whiteboard.dart';
 
+class StrokeBatch {
+  List<Stroke> strokes;
+  StrokeBatch(this.strokes);
+}
+
 class BoardProvider extends ChangeNotifier {
   Tool tool = PenTool();
   Color penColor = Colors.black;
   double penWidth = 2.0;
   List<Stroke> strokes = <Stroke>[];
-  List<Stroke> undoCache = <Stroke>[];
   bool isFraming = false;
   Uint8List? canvasImage;
   GlobalKey _repaintBoundaryKey = GlobalKey();
 
+  List<StrokeBatch> undoCache = <StrokeBatch>[];
+  List<StrokeBatch> redoCache = <StrokeBatch>[];
 // default to center
   Rect? frameRect = null;
 
@@ -52,13 +58,19 @@ class BoardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addUndoBatch(StrokeBatch batch) {
+    undoCache.add(batch);
+
+    notifyListeners();
+  }
+
   void removeStroke(Offset point) {
     strokes.removeWhere((stroke) {
-      undoCache.add(stroke);
       return stroke.points.any((p) {
         return (p - point).distance < 10;
       });
     });
+
     notifyListeners();
   }
 
@@ -95,7 +107,7 @@ class BoardProvider extends ChangeNotifier {
   void undo() {
     // limit undo to 10
     if (strokes.isNotEmpty) {
-      undoCache.add(strokes.removeLast());
+      undoCache.add(StrokeBatch([strokes.removeLast()]));
     }
 
     if (undoCache.length > 10) {
@@ -107,12 +119,13 @@ class BoardProvider extends ChangeNotifier {
 
   void redo() {
     if (undoCache.isNotEmpty) {
-      strokes.add(undoCache.removeLast());
+      strokes.addAll(undoCache.removeLast().strokes);
     }
     notifyListeners();
   }
 
   void clear() {
+    undoCache.add(StrokeBatch(strokes));
     strokes.clear();
 
     notifyListeners();
