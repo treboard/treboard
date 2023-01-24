@@ -4,7 +4,6 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:treboard/core/tool.dart';
 import 'package:treboard/models/batch.dart';
 import 'package:treboard/models/stroke.dart';
-import 'package:treboard/widgets/whiteboard.dart';
 
 class BoardProvider extends ChangeNotifier {
   Tool tool = PenTool();

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/models/stroke_models.dart';
 import 'package:treboard/providers/board_provider.dart';
-import 'package:treboard/widgets/whiteboard.dart';
-import 'package:treboard/widgets/extractor.dart';
 
 enum ToolGroup {
   pen,
