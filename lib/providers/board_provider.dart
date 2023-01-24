@@ -62,10 +62,10 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void addUndoBatch(StrokeBatch batch) {
-    if (batch.strokes.isNotEmpty) {
-      undoCache.add(batch);
+    if (undoCache.length > 10) {
+      undoCache.removeAt(0);
     }
-
+    undoCache.add(batch);
     notifyListeners();
   }
 
@@ -116,17 +116,12 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void undo() {
-    // limit undo to 10
-    if (undoCache.length > 10) {
-      undoCache.removeAt(0);
-    }
-    if (strokes.isNotEmpty) {
-      redoCache.add(StrokeBatch(strokes));
-      strokes.clear();
-    }
     if (undoCache.isNotEmpty) {
-      strokes.addAll(undoCache.removeLast().strokes);
+      StrokeBatch batch = undoCache.removeLast();
+      strokes.removeWhere((stroke) => batch.strokes.contains(stroke));
+      redoCache.add(batch);
     }
+
     notifyListeners();
   }
 
