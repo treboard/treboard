@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-class Element {
+class CanvasElement {
   Offset position = Offset.zero;
   double scale = 1.0;
 
-  Element(this.position, this.scale);
+  CanvasElement(this.position, this.scale);
 }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:treboard/models/stroke_models.dart';
 import 'package:treboard/providers/board_provider.dart';
 import 'package:treboard/providers/node_provider.dart';
+import 'package:treboard/widgets/board_canvas.dart';
 import 'package:treboard/widgets/color_bar.dart';
 import 'package:treboard/widgets/extractor.dart';
 import 'package:treboard/widgets/node.dart';
@@ -80,44 +81,10 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                     }
                   });
                 },
-                onPanStart: (details) {
-                  ref
-                      .watch(boardProvider)
-                      .tool
-                      .use(ref.read(boardProvider), details);
-                },
-                onPanUpdate: (details) {
-                  // add a new point to the current stroke
-
-                  ref
-                      .watch(boardProvider)
-                      .tool
-                      .use(ref.read(boardProvider), details);
-                },
-                onPanEnd: (details) {
-                  // add a new point to the current stroke
-                  ref
-                      .watch(boardProvider)
-                      .tool
-                      .use(ref.read(boardProvider), details);
-
-                  // convert picture to Image
-                },
-                child: RepaintBoundary(
-                  key: ref.read(boardProvider).repaintBoundaryKey,
-                  child: CustomPaint(
-                    size: Size.infinite,
-                    painter: Painter(
-                      strokeRef.read(boardProvider).state.strokes,
-                      ref.watch(boardProvider).frameRect ?? Rect.zero,
-                    ),
-                    child: GridPaper(
-                      color: Color.fromARGB(255, 228, 228, 228),
-                      interval: 200,
-                      subdivisions: 5,
-                      child: Container(),
-                    ),
-                  ),
+                child: Container(
+                  width: double.maxFinite,
+                  height: double.maxFinite,
+                  child: GridPaper(child: const BoardCanvas()),
                 ),
               ),
             ),
@@ -187,34 +154,4 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
       ),
     );
   }
-}
-
-class Painter extends CustomPainter {
-  Painter(this.points, this.rect);
-  final List<Stroke> points;
-  Rect? rect;
-  @override
-  void paint(Canvas canvas, Size size) async {
-    void drawStrokes(Paint paint) {
-      for (Stroke stroke in points) {
-        paint.color = stroke.color;
-        paint.strokeWidth = stroke.width;
-        for (int i = 0; i < stroke.points.length - 1; i++) {
-          canvas.drawLine(stroke.points[i], stroke.points[i + 1], paint);
-        }
-      }
-    }
-
-    final paint = Paint()
-      ..color = Colors.black
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5.0;
-
-    drawStrokes(paint);
-  }
-
-  @override
-  bool shouldRepaint(Painter oldDelegate) => true;
 }

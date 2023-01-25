@@ -5,6 +5,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/core/tool.dart';
+import 'package:treboard/models/draw_mode.dart';
 import 'package:treboard/providers/board_provider.dart';
 
 class Toolbar extends ConsumerStatefulWidget {
@@ -17,18 +18,16 @@ class Toolbar extends ConsumerStatefulWidget {
 class _ToolbarState extends ConsumerState<Toolbar> {
   // create dict of icons and their respective tool
 
-  List<Tool> tools = [
-    PenTool(),
-    EraserTool(),
-    ExtractorTool(),
-    ClearTool(),
+  List<DrawMode> tools = [
+    DrawMode.sketch,
+    DrawMode.erase,
+    DrawMode.line,
   ];
 
   List<Icon> icons = [
     const Icon(Icons.edit_outlined),
     const Icon(Icons.delete_outline_outlined),
     const Icon(Icons.format_shapes_outlined),
-    const Icon(Icons.cleaning_services_outlined),
   ];
 
   @override
@@ -36,7 +35,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
     // based on what the current tool is, set the selected button
     List<bool> selected = List.filled(tools.length, false);
     for (int i = 0; i < tools.length; i++) {
-      if (ref.watch(boardProvider).tool == tools[i]) {
+      if (ref.watch(boardProvider).drawingMode == tools[i]) {
         selected[i] = true;
       }
     }
@@ -52,23 +51,18 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                 color: Colors.black.withOpacity(0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: const Offset(0, 3),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
           child: ToggleButtons(
+              constraints: const BoxConstraints(minWidth: 50, minHeight: 50),
               direction: Axis.vertical,
               fillColor: Colors.grey[200],
               isSelected: selected,
               onPressed: (index) {
-                if (tools[index] is ClearTool) {
-                  // clear the board
-                  ref.read(boardProvider).clearBoard();
-                  index = 0;
-                  return;
-                }
                 // set the selected tool
-                ref.read(boardProvider.notifier).setTool(tools[index]);
+                ref.read(boardProvider.notifier).setMode(tools[index]);
                 // set the selected button
                 for (int i = 0; i < selected.length; i++) {
                   selected[i] = i == index;

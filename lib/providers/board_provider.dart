@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:treboard/core/tool.dart';
 import 'package:treboard/models/batch.dart';
+import 'package:treboard/models/draw_mode.dart';
 import 'package:treboard/models/stroke.dart';
 
 enum DrawState {
@@ -30,7 +31,6 @@ class StackState {
 }
 
 class BoardProvider extends ChangeNotifier {
-  Tool tool = PenTool();
   Color penColor = Colors.black;
   double penWidth = 2.0;
   StackState state = StackState();
@@ -38,12 +38,26 @@ class BoardProvider extends ChangeNotifier {
   Uint8List? canvasImage;
   final GlobalKey _repaintBoundaryKey = GlobalKey();
 
+  final double width;
+  final double height;
+  List<Stroke> allStrokes;
+  Stroke? currentStroke;
+  DrawMode drawingMode;
+
+  GlobalKey canvasGlobalKey;
+
   StackState tempState = StackState();
 
 // default to center
   Rect? frameRect;
 
-  BoardProvider({
+  BoardProvider(
+    this.width,
+    this.height,
+    this.allStrokes,
+    this.currentStroke,
+    this.drawingMode,
+    this.canvasGlobalKey, {
     this.penWidth = 2.0,
   });
 
@@ -59,6 +73,11 @@ class BoardProvider extends ChangeNotifier {
       isFraming = false;
     }
     frameRect = null;
+    notifyListeners();
+  }
+
+  void setAllStrokes(List<Stroke> strokes) {
+    state.strokes = strokes;
     notifyListeners();
   }
 
@@ -115,12 +134,8 @@ class BoardProvider extends ChangeNotifier {
   }
 
   // clear undoCache
-  void setTool(Tool tool) {
-    this.tool = tool;
-    // check if tool is not extractor
-    if (tool is! ExtractorTool) {
-      isFraming = false;
-    }
+  void setMode(DrawMode mode) {
+    drawingMode = mode;
     notifyListeners();
   }
 
@@ -168,4 +183,12 @@ class BoardProvider extends ChangeNotifier {
   }
 }
 
-final boardProvider = ChangeNotifierProvider((ref) => BoardProvider());
+final boardProvider = ChangeNotifierProvider((ref) => BoardProvider(
+    0.0,
+    0.0,
+    <Stroke>[],
+    null,
+    DrawMode.sketch,
+    GlobalKey(
+      debugLabel: 'canvas',
+    )));
