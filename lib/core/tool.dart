@@ -54,10 +54,18 @@ class EraserTool extends Tool {
     // keep in mind that there is an undo batch cache
 
     if (details is DragStartDetails || details is DragUpdateDetails) {
-      provider.removeStroke(details.localPosition, 5);
+      provider.state.removedStrokes = provider.state.strokes.where((stroke) {
+        return stroke.intersects(details.localPosition, provider.penWidth);
+      }).toList();
+
+      provider.state.strokes.removeWhere((stroke) {
+        return stroke.intersects(details.localPosition, provider.penWidth);
+      });
+
+      provider.addUndoBatch(StrokeBatch(provider.state.removedStrokes));
     } else if (details is DragEndDetails) {
-      provider.addUndoBatch(StrokeBatch(provider.removedStrokes));
-      provider.removedStrokes.clear();
+      provider.addUndoBatch(StrokeBatch(provider.state.removedStrokes));
+      provider.state.removedStrokes.clear();
     }
   }
 }
@@ -67,7 +75,15 @@ class ExtractorTool extends Tool {
   void use(BoardProvider provider, dynamic details) {
     // text extractor widget that shows rectangle around region based on drag.
     // when drag ends, text is extracted and displayed in a note widget
+    provider.extractText();
+  }
+}
 
-    if (details is DragStartDetails) {}
+class ClearTool extends Tool {
+  @override
+  void use(BoardProvider provider, dynamic details) {
+    // clear the board
+    provider.clearBoard();
+    provider.setTool(PenTool());
   }
 }

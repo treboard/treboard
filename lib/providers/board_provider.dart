@@ -11,19 +11,35 @@ enum DrawState {
   erasing,
 }
 
-class BoardProvider extends ChangeNotifier {
-  Tool tool = PenTool();
-  Color penColor = Colors.black;
-  double penWidth = 2.0;
+class StackState {
   List<Stroke> strokes = <Stroke>[];
-  bool isFraming = false;
-  Uint8List? canvasImage;
-  final GlobalKey _repaintBoundaryKey = GlobalKey();
-  DrawState state = DrawState.idle;
 
   List<StrokeBatch> undoCache = <StrokeBatch>[];
   List<StrokeBatch> redoCache = <StrokeBatch>[];
   List<Stroke> removedStrokes = <Stroke>[];
+
+  bool get canUndo => undoCache.isNotEmpty;
+  bool get canRedo => redoCache.isNotEmpty;
+
+  void copyState(StackState state) {
+    strokes = state.strokes;
+    undoCache = state.undoCache;
+    redoCache = state.redoCache;
+    removedStrokes = state.removedStrokes;
+  }
+}
+
+class BoardProvider extends ChangeNotifier {
+  Tool tool = PenTool();
+  Color penColor = Colors.black;
+  double penWidth = 2.0;
+  StackState state = StackState();
+  bool isFraming = false;
+  Uint8List? canvasImage;
+  final GlobalKey _repaintBoundaryKey = GlobalKey();
+
+  StackState tempState = StackState();
+
 // default to center
   Rect? frameRect;
 
@@ -47,8 +63,12 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void addStroke(Stroke stroke) {
-    strokes.add(stroke);
-    undoCache.add(StrokeBatch([stroke]));
+    state.strokes.add(stroke);
+
+    // take snapshot of strokes
+    StrokeBatch batch = StrokeBatch(state.strokes);
+    // add to undo cache
+    addUndoBatch(batch);
 
     notifyListeners();
   }
@@ -64,30 +84,32 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void addUndoBatch(StrokeBatch batch) {
-    if (undoCache.length > 10) {
-      undoCache.removeAt(0);
-    }
-    undoCache.add(batch);
+    state.undoCache.add(batch);
+    state.removedStrokes.clear();
+    state.redoCache.clear();
+
     notifyListeners();
   }
 
   void removeStroke(Offset point, double radius) {
-    for (int i = 0; i < strokes.length; i++) {
-      Stroke stroke = strokes[i];
+    for (int i = 0; i < state.strokes.length; i++) {
+      Stroke stroke = state.strokes[i];
       if (stroke.intersects(point, radius)) {
-        removedStrokes.add(stroke);
-        strokes.removeAt(i);
-        print("Added stroke to removedStrokes");
+        state.removedStrokes.add(stroke);
+        state.strokes.removeAt(i);
+
         break;
       }
     }
+
+    addUndoBatch(StrokeBatch(state.removedStrokes));
 
     notifyListeners();
   }
 
   void addPoint(Offset point) {
-    if (strokes.isNotEmpty) {
-      strokes.last.points.add(point);
+    if (state.strokes.isNotEmpty) {
+      state.strokes.last.points.add(point);
     }
     notifyListeners();
   }
@@ -118,29 +140,29 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void undo() {
-    if (undoCache.isNotEmpty) {
-      StrokeBatch batch = undoCache.removeLast();
-      strokes.removeWhere((stroke) => batch.strokes.contains(stroke));
-      redoCache.add(batch);
+    if (state.canUndo) {
+      state.redoCache.add(StrokeBatch(state.strokes));
+      state.strokes = state.undoCache.removeLast().strokes;
     }
-
     notifyListeners();
   }
 
   void redo() {
-    if (redoCache.isNotEmpty) {
-      strokes.addAll(redoCache.removeLast().strokes);
+    if (state.canRedo) {
+      StrokeBatch redoBatch = state.redoCache.removeLast();
+      state.undoCache.add(StrokeBatch(state.strokes));
+      state.strokes = redoBatch.strokes;
     }
 
     notifyListeners();
   }
 
-  void clear() {
-    // undo logic
-    if (strokes.isNotEmpty) {
-      undoCache.add(StrokeBatch(strokes));
-    }
-    strokes.clear();
+  void clearBoard() {
+    // Clearing the board is a state action and as a result,
+    // the current state is saved to the undo cache.
+    state.undoCache.add(StrokeBatch(state.strokes));
+    state.strokes.clear();
+    state.redoCache.clear();
 
     notifyListeners();
   }

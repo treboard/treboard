@@ -103,21 +103,19 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
                   // convert picture to Image
                 },
-                child: GridPaper(
-                  color: Color.fromARGB(255, 162, 162, 162),
-                  interval: 200,
-                  subdivisions: 5,
-                  child: Container(
-                    color: Colors.transparent,
-                    child: RepaintBoundary(
-                      key: ref.read(boardProvider).repaintBoundaryKey,
-                      child: CustomPaint(
-                        painter: Painter(
-                          strokeRef.read(boardProvider).strokes,
-                          ref.watch(boardProvider).frameRect ?? Rect.zero,
-                        ),
-                        child: Container(),
-                      ),
+                child: RepaintBoundary(
+                  key: ref.read(boardProvider).repaintBoundaryKey,
+                  child: CustomPaint(
+                    size: Size.infinite,
+                    painter: Painter(
+                      strokeRef.read(boardProvider).state.strokes,
+                      ref.watch(boardProvider).frameRect ?? Rect.zero,
+                    ),
+                    child: GridPaper(
+                      color: Color.fromARGB(255, 228, 228, 228),
+                      interval: 200,
+                      subdivisions: 5,
+                      child: Container(),
                     ),
                   ),
                 ),

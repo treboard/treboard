@@ -1,5 +1,7 @@
 // create a floating toolbar
 
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/core/tool.dart';
@@ -13,17 +15,32 @@ class Toolbar extends ConsumerStatefulWidget {
 }
 
 class _ToolbarState extends ConsumerState<Toolbar> {
-  List<bool> selected = [true, false, false, false];
+  // create dict of icons and their respective tool
+
+  List<Tool> tools = [
+    PenTool(),
+    EraserTool(),
+    ExtractorTool(),
+    ClearTool(),
+  ];
+
+  List<Icon> icons = [
+    const Icon(Icons.edit_outlined),
+    const Icon(Icons.delete_outline_outlined),
+    const Icon(Icons.format_shapes_outlined),
+    const Icon(Icons.cleaning_services_outlined),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<Icon> buttons = [
-      Icon(ref.read(boardProvider).tool.getIcon()),
-      const Icon(Icons.delete_outline_outlined),
-      const Icon(Icons.format_shapes_outlined),
-      const Icon(Icons.cleaning_services_outlined),
-      // restart here then delete old code latger
-    ];
+    // based on what the current tool is, set the selected button
+    List<bool> selected = List.filled(tools.length, false);
+    for (int i = 0; i < tools.length; i++) {
+      if (ref.watch(boardProvider).tool == tools[i]) {
+        selected[i] = true;
+      }
+    }
+
     return Column(
       children: [
         Container(
@@ -41,31 +58,26 @@ class _ToolbarState extends ConsumerState<Toolbar> {
           ),
           child: ToggleButtons(
               direction: Axis.vertical,
+              fillColor: Colors.grey[200],
               isSelected: selected,
               onPressed: (index) {
+                if (tools[index] is ClearTool) {
+                  // clear the board
+                  ref.read(boardProvider).clearBoard();
+                  index = 0;
+                  return;
+                }
+                // set the selected tool
+                ref.read(boardProvider.notifier).setTool(tools[index]);
+                // set the selected button
+                for (int i = 0; i < selected.length; i++) {
+                  selected[i] = i == index;
+                }
                 setState(() {
-                  for (int i = 0; i < selected.length; i++) {
-                    selected[i] = i == index;
-
-                    if (index != 2) {
-                      ref.read(boardProvider).toggleFrame();
-                    }
-                  }
-
-                  if (index == 0) {
-                    ref.read(boardProvider).tool = PenTool();
-                  } else if (index == 1) {
-                    ref.read(boardProvider).tool = EraserTool();
-                  } else if (index == 2) {
-                    ref.read(boardProvider).tool = ExtractorTool();
-                    ref.read(boardProvider).extractText();
-                  } else if (index == 3) {
-                    ref.read(boardProvider.notifier).clear();
-                    selected = [true, false, false, false];
-                  }
+                  selected = selected;
                 });
               },
-              children: buttons),
+              children: icons),
         ),
         Container(
           width: 50,
@@ -86,14 +98,20 @@ class _ToolbarState extends ConsumerState<Toolbar> {
           child: Column(
             children: [
               IconButton(
-                icon: const Icon(Icons.undo_outlined),
+                icon: Icon(Icons.undo_outlined,
+                    color: ref.watch(boardProvider).state.canUndo
+                        ? Colors.black
+                        : Colors.grey),
                 onPressed: () {
                   // remove the last stroke
                   ref.read(boardProvider.notifier).undo();
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.redo_outlined),
+                icon: Icon(Icons.redo_outlined,
+                    color: ref.watch(boardProvider).state.canRedo
+                        ? Colors.black
+                        : Colors.grey),
                 onPressed: () {
                   // redo the last stroke
                   ref.read(boardProvider.notifier).redo();

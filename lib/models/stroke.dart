@@ -1,17 +1,32 @@
 import 'dart:ui';
+import 'element.dart';
 
-class Stroke {
-  Stroke(this.points, this.color, this.width);
+class Stroke extends Element {
+  Stroke(this.points, this.color, this.width) : super(Offset.zero, 0.0);
   final List<Offset> points;
   final Color color;
   final double width;
 
-  bool intersects(localPosition, double radius) {
-    // intersects within a adius of 10px
+  Offset getPosition() {
+    // get the average of all points
+    double x = 0.0;
+    double y = 0.0;
+
     for (int i = 0; i < points.length; i++) {
-      Offset point = points[i];
-      if (point.dx - localPosition.dx < 10 &&
-          point.dy - localPosition.dy < 10) {
+      x += points[i].dx;
+      y += points[i].dy;
+    }
+
+    return Offset(x / points.length, y / points.length);
+  }
+
+  bool intersects(localPosition, double radius) {
+    // intersects within a radius of 10px
+    for (int i = 0; i < points.length - 1; i++) {
+      if (localPosition.dx - radius <= points[i].dx &&
+          localPosition.dx + radius >= points[i].dx &&
+          localPosition.dy - radius <= points[i].dy &&
+          localPosition.dy + radius >= points[i].dy) {
         return true;
       }
     }
