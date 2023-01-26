@@ -165,6 +165,7 @@ class Painter extends CustomPainter {
         case DrawType.line:
           canvas.drawLine(p1, p2, paint);
           break;
+
         case DrawType.circle:
           canvas.drawOval(rect, paint);
           break;
