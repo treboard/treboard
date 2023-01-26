@@ -36,7 +36,7 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
   void onPointerMove(PointerMoveEvent details, BuildContext context) {
     if (details.buttons != kPrimaryMouseButton) return;
     final points =
-        List<Offset>.from(ref.read(boardProvider).currentStroke!.points)
+        List<Offset>.from(ref.read(boardProvider).currentStroke?.points ?? [])
           ..add(details.localPosition);
     ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
@@ -57,6 +57,10 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
           width: ref.read(boardProvider).penWidth,
         ),
         ref.read(boardProvider).drawingMode);
+
+    ref
+        .read(boardProvider)
+        .setCurrentStroke(ref.read(boardProvider).currentStroke);
   }
 
   void onPointerUp(PointerUpEvent details) {
@@ -72,7 +76,8 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
       child: RepaintBoundary(
         key: ref.watch(boardProvider).canvasGlobalKey,
         child: Container(
-          color: Colors.transparent,
+          width: widget.width,
+          height: widget.height,
           child: CustomPaint(
             painter: Painter(ref.watch(boardProvider).allStrokes),
           ),
@@ -177,5 +182,6 @@ class Painter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(Painter oldDelegate) => oldDelegate.strokes != strokes;
+  bool shouldRepaint(covariant Painter oldDelegate) =>
+      oldDelegate.strokes != strokes;
 }

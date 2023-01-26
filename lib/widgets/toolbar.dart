@@ -1,7 +1,3 @@
-// create a floating toolbar
-
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/models/draw_mode.dart';
@@ -28,7 +24,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
 // sketch, erase
     Tool(DrawMode.sketch, const Icon(Icons.edit_outlined)),
     Tool(DrawMode.erase, const Icon(Icons.delete_outline_outlined)),
-    Tool(DrawMode.text, const Icon(Icons.text_fields_outlined)),
+    Tool(DrawMode.clear, const Icon(Icons.clear_outlined)),
   ];
 
   List<Tool> shapeTools = [
@@ -92,7 +88,13 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                   isSelected: selected,
                   onPressed: (index) {
                     // set the selected tool
-                    ref.read(boardProvider.notifier).setMode(tools[index].tool);
+                    if (tools[index].tool != DrawMode.clear) {
+                      ref
+                          .read(boardProvider.notifier)
+                          .setMode(tools[index].tool);
+                    } else {
+                      ref.read(boardProvider).clearBoard();
+                    }
                     // set the selected button if not the sketch tool
                     if (index != 0) {
                       selected = List.filled(tools.length, false);
@@ -136,7 +138,9 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                     onPressed: () {
                       // remove the last stroke
 
-                      ref.read(boardProvider.notifier).undo();
+                      ref.read(boardProvider.notifier).allStrokes.isNotEmpty
+                          ? ref.read(boardProvider.notifier).undo()
+                          : null;
                     },
                   ),
                   IconButton(
@@ -146,7 +150,9 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                             : Colors.grey),
                     onPressed: () {
                       // redo the last stroke
-                      ref.read(boardProvider.notifier).redo();
+                      ref.read(boardProvider).canRedo
+                          ? ref.read(boardProvider.notifier).redo()
+                          : null;
                     },
                   ),
                 ],

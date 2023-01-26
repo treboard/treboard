@@ -22,6 +22,9 @@ class BoardProvider extends ChangeNotifier {
   bool _canRedo = false;
   bool _canUndo = false;
 
+  int maxUndo = 10;
+  int strokeCount = 0;
+
   GlobalKey canvasGlobalKey;
 
   bool get canRedo => _canRedo;
@@ -55,10 +58,12 @@ class BoardProvider extends ChangeNotifier {
 
   void setAllStrokes(List<Stroke> strokes) {
     allStrokes = strokes;
-    undoCache.add(allStrokes);
-    redoCache.clear();
-    _canUndo = true;
-    _canRedo = false;
+
+    if (undoCache.length >= maxUndo) {
+      undoCache.removeAt(0);
+    }
+
+    strokeCount = strokes.length;
 
     notifyListeners();
   }
@@ -126,12 +131,11 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void clearBoard() {
-    undoCache.clear();
+    allStrokes = [];
+    undoCache.add(allStrokes);
     redoCache.clear();
-    _canUndo = false;
+    _canUndo = true;
     _canRedo = false;
-
-    allStrokes.clear();
 
     notifyListeners();
   }
