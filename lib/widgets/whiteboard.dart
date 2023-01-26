@@ -27,7 +27,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   // CustomNodes include Text, Expression, Image, etc.
   // Only Text is implemented for now
-  // Text is a widget that can be dragged around the board
+  // Text is a widget that can be dragound the board
   @override
   void dispose() {
     super.dispose();
@@ -38,118 +38,124 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
     WidgetRef strokeRef = ref;
     ref.watch(nodeProvider).nodes;
 
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(
-          LogicalKeyboardKey.keyZ,
-          control: true,
-        ): () => ref.read(boardProvider).undo(),
-      },
-      key: const ValueKey('shortcutHandler'),
-      child: Focus(
-        child: Stack(
-          children: [
-            InteractiveViewer(
-              //boundaryMargin: const EdgeInsets.all(double.infinity),
-              minScale: 0.1,
+    return Scaffold(
+      body: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(
+            LogicalKeyboardKey.keyZ,
+            control: true,
+          ): () => ref.read(boardProvider).undo(),
+        },
+        key: const ValueKey('shortcutHandler'),
+        child: Focus(
+          child: Stack(
+            children: [
+              InteractiveViewer(
+                minScale: 0.1,
+                child: GestureDetector(
+                  onPanStart: (details) {},
+                  onSecondaryTapDown: (details) {
+                    // display context menu
 
-              child: GestureDetector(
-                onSecondaryTapDown: (details) {
-                  // display context menu
-
-                  showMenu(
-                      context: context,
-                      position: RelativeRect.fromLTRB(
-                          details.globalPosition.dx,
-                          details.globalPosition.dy,
-                          details.globalPosition.dx + 1,
-                          details.globalPosition.dy + 1),
-                      items: const [
-                        PopupMenuItem(
-                          value: 1,
-                          child: Text('Add Note'),
-                        ),
-                      ]).then((value) {
-                    if (value == 1) {
-                      // add a new CustomNode
-                      ref.read(nodeProvider).addNode(
-                            CustomNode(
-                              position: details.localPosition,
-                              child: Note(),
-                            ),
-                          );
-                    }
-                  });
-                },
-                child: Container(
-                  width: double.maxFinite,
-                  height: double.maxFinite,
-                  child: GridPaper(child: const BoardCanvas()),
+                    showMenu(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                            details.globalPosition.dx,
+                            details.globalPosition.dy,
+                            details.globalPosition.dx + 1,
+                            details.globalPosition.dy + 1),
+                        items: const [
+                          PopupMenuItem(
+                            value: 1,
+                            child: Text('Add Note'),
+                          ),
+                        ]).then((value) {
+                      if (value == 1) {
+                        // add a new CustomNode
+                        ref.read(nodeProvider).addNode(
+                              CustomNode(
+                                position: details.localPosition,
+                                child: Note(),
+                              ),
+                            );
+                      }
+                    });
+                  },
+                  child: Container(
+                    width: double.maxFinite,
+                    height: double.maxFinite,
+                    child: GridPaper(
+                        child: BoardCanvas(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                    )),
+                  ),
                 ),
               ),
-            ),
 
-            // display CustomNodes
-            ...ref.read(nodeProvider).nodes,
-            Positioned(
-              bottom: MediaQuery.of(context).size.height / 2 - (2 * 20 + 40),
-              left: 20,
-              child: const Toolbar(),
-            ),
+              // display CustomNodes
+              ...ref.read(nodeProvider).nodes,
+              Positioned(
+                bottom: MediaQuery.of(context).size.height / 2 - (2 * 20 + 40),
+                left: 20,
+                child: const Toolbar(),
+              ),
 
-            const ColorBar(),
+              const ColorBar(),
 
-            TextExtractor(),
-            Positioned(
-              top: 20,
-              left: MediaQuery.of(context).size.width / 2 - (2 * 20 + 200) / 2,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Slider(
-                      value: ref.watch(boardProvider).penWidth,
-                      min: 2,
-                      max: 20,
-                      divisions: 4,
-                      onChanged: (value) {
-                        // change on exponential scale
-                        ref.read(boardProvider.notifier).setPenWidth(value);
-                      },
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    // some circular container to represent the size of the pen
-                    Container(
-                      margin: const EdgeInsets.all(10),
-                      width: ref.watch(boardProvider).penWidth * 2,
-                      height: ref.watch(boardProvider).penWidth * 2,
-                      decoration: BoxDecoration(
-                        color: ref.watch(boardProvider).penColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 1,
+              TextExtractor(),
+              Positioned(
+                top: 20,
+                left:
+                    MediaQuery.of(context).size.width / 2 - (2 * 20 + 200) / 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Slider(
+                        value: ref.watch(boardProvider).penWidth,
+                        min: 2,
+                        max: 20,
+                        divisions: 4,
+                        onChanged: (value) {
+                          // change on exponential scale
+                          ref.read(boardProvider.notifier).setPenWidth(value);
+                        },
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      // some circular container to represent the size of the pen
+                      Container(
+                        margin: const EdgeInsets.all(10),
+                        width: ref.watch(boardProvider).penWidth * 2,
+                        height: ref.watch(boardProvider).penWidth * 2,
+                        decoration: BoxDecoration(
+                          color: ref.watch(boardProvider).penColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 1,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

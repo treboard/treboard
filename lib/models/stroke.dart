@@ -9,11 +9,13 @@ class Stroke extends CanvasElement {
   final Color color;
   final double width;
   final DrawType type;
+  final bool filled;
   Stroke({
     required this.points,
     this.color = Colors.black,
     required this.width,
     this.type = DrawType.sketch,
+    this.filled = false,
   }) : super(Offset.zero, 1.0);
 
   factory Stroke.fromDrawMode(Stroke stroke, DrawMode mode) {
@@ -21,19 +23,20 @@ class Stroke extends CanvasElement {
       points: stroke.points,
       color: stroke.color,
       width: stroke.width,
+      filled: mode == DrawMode.line ||
+          mode == DrawMode.circle ||
+          mode == DrawMode.square,
       type: () {
         switch (mode) {
           case DrawMode.sketch:
-            return DrawType.sketch;
           case DrawMode.erase:
-            return DrawType.erase;
-          case DrawMode.select:
-            return DrawType.select;
+            return DrawType.sketch;
           case DrawMode.line:
             return DrawType.line;
           case DrawMode.circle:
             return DrawType.circle;
           case DrawMode.square:
+          case DrawMode.select:
             return DrawType.square;
         }
       }(),
@@ -87,8 +90,6 @@ class Stroke extends CanvasElement {
 
 enum DrawType {
   sketch,
-  erase,
-  select,
   line,
   circle,
   square,

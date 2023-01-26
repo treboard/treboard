@@ -4,7 +4,6 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:treboard/core/tool.dart';
 import 'package:treboard/models/draw_mode.dart';
 import 'package:treboard/providers/board_provider.dart';
 
@@ -93,7 +92,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             children: [
               IconButton(
                 icon: Icon(Icons.undo_outlined,
-                    color: ref.watch(boardProvider).state.canUndo
+                    color: ref.watch(boardProvider).canUndo
                         ? Colors.black
                         : Colors.grey),
                 onPressed: () {
@@ -103,7 +102,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               ),
               IconButton(
                 icon: Icon(Icons.redo_outlined,
-                    color: ref.watch(boardProvider).state.canRedo
+                    color: ref.watch(boardProvider).canRedo
                         ? Colors.black
                         : Colors.grey),
                 onPressed: () {
