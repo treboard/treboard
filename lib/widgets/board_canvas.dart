@@ -38,13 +38,13 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
     final points =
         List<Offset>.from(ref.read(boardProvider).currentStroke!.points)
           ..add(details.localPosition);
-    ref.read(boardProvider).currentStroke = Stroke.fromDrawMode(
+    ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
           color: ref.read(boardProvider).penColor,
           points: points,
           width: ref.read(boardProvider).penWidth,
         ),
-        ref.read(boardProvider).drawingMode);
+        ref.read(boardProvider).drawingMode));
   }
 
   void onPointerDown(PointerDownEvent details, BuildContext context) {

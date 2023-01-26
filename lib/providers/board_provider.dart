@@ -63,6 +63,11 @@ class BoardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setCurrentStroke(Stroke? stroke) {
+    currentStroke = stroke;
+    notifyListeners();
+  }
+
   void setPenSize(double size) {
     penWidth = size;
     notifyListeners();
@@ -98,31 +103,34 @@ class BoardProvider extends ChangeNotifier {
     if (undoCache.isNotEmpty) {
       _canRedo = true;
       redoCache.add(undoCache.removeLast());
-      allStrokes = undoCache.last;
-      notifyListeners();
+      allStrokes = undoCache.isNotEmpty ? undoCache.last : [];
 
       if (undoCache.isEmpty) {
         _canUndo = false;
       }
     }
+    notifyListeners();
   }
 
   void redo() {
     if (redoCache.isNotEmpty) {
       _canUndo = true;
       undoCache.add(redoCache.removeLast());
-      allStrokes = undoCache.last;
-      notifyListeners();
+      allStrokes = redoCache.isNotEmpty ? redoCache.last : [];
 
       if (redoCache.isEmpty) {
         _canRedo = false;
       }
     }
+    notifyListeners();
   }
 
   void clearBoard() {
-    // Clearing the board is a state action and as a result,
-    // the current state is saved to the undo cache.
+    undoCache.clear();
+    redoCache.clear();
+    _canUndo = false;
+    _canRedo = false;
+
     allStrokes.clear();
 
     notifyListeners();
