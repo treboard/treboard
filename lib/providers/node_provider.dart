@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:treboard/widgets/nodes/note.dart';
 import 'package:treboard/widgets/node.dart';
 
 class NodeProvider extends ChangeNotifier {

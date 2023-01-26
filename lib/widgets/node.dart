@@ -40,8 +40,8 @@ class _CustomNodeState extends ConsumerState<CustomNode> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: this.widget.position.dx,
-      top: this.widget.position.dy,
+      left: widget.position.dx,
+      top: widget.position.dy,
       child: Column(children: [
         // some panel that we can drag around
         Container(

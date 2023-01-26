@@ -1,23 +1,40 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import 'package:treboard/core/tool.dart';
-import 'package:treboard/widgets/whiteboard.dart';
+import 'package:treboard/models/draw_mode.dart';
+import 'package:treboard/models/stroke.dart';
 
 class BoardProvider extends ChangeNotifier {
-  Tool tool = PenTool();
   Color penColor = Colors.black;
   double penWidth = 2.0;
-  List<Stroke> strokes = <Stroke>[];
-  List<Stroke> undoCache = <Stroke>[];
+
   bool isFraming = false;
   Uint8List? canvasImage;
-  GlobalKey _repaintBoundaryKey = GlobalKey();
+  final GlobalKey _repaintBoundaryKey = GlobalKey();
+
+  List<Stroke> allStrokes;
+  Stroke? currentStroke;
+  DrawMode drawingMode;
+
+  List<List<Stroke>> undoCache = [];
+  List<List<Stroke>> redoCache = [];
+
+  bool _canRedo = false;
+  bool _canUndo = false;
+
+  GlobalKey canvasGlobalKey;
+
+  bool get canRedo => _canRedo;
+  bool get canUndo => _canUndo;
 
 // default to center
-  Rect? frameRect = null;
+  Rect? frameRect;
 
-  BoardProvider({
+  BoardProvider(
+    this.allStrokes,
+    this.currentStroke,
+    this.drawingMode,
+    this.canvasGlobalKey, {
     this.penWidth = 2.0,
   });
 
@@ -36,9 +53,18 @@ class BoardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addStroke(Stroke stroke) {
-    strokes.add(stroke);
+  void setAllStrokes(List<Stroke> strokes) {
+    allStrokes = strokes;
+    undoCache.add(allStrokes);
+    redoCache.clear();
+    _canUndo = true;
+    _canRedo = false;
 
+    notifyListeners();
+  }
+
+  void setCurrentStroke(Stroke? stroke) {
+    currentStroke = stroke;
     notifyListeners();
   }
 
@@ -52,28 +78,9 @@ class BoardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeStroke(Offset point) {
-    strokes.removeWhere((stroke) {
-      undoCache.add(stroke);
-      return stroke.points.any((p) {
-        return (p - point).distance < 10;
-      });
-    });
-    notifyListeners();
-  }
-
-  void addPoint(Offset point) {
-    strokes.last.points.add(point);
-    notifyListeners();
-  }
-
   // clear undoCache
-  void setTool(Tool tool) {
-    this.tool = tool;
-    // check if tool is not extractor
-    if (tool is! ExtractorTool) {
-      isFraming = false;
-    }
+  void setMode(DrawMode mode) {
+    drawingMode = mode;
     notifyListeners();
   }
 
@@ -93,30 +100,47 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void undo() {
-    // limit undo to 10
-    if (strokes.isNotEmpty) {
-      undoCache.add(strokes.removeLast());
-    }
+    if (undoCache.isNotEmpty) {
+      _canRedo = true;
+      redoCache.add(undoCache.removeLast());
+      allStrokes = undoCache.isNotEmpty ? undoCache.last : [];
 
-    if (undoCache.length > 10) {
-      undoCache.removeAt(0);
+      if (undoCache.isEmpty) {
+        _canUndo = false;
+      }
     }
-
     notifyListeners();
   }
 
   void redo() {
-    if (undoCache.isNotEmpty) {
-      strokes.add(undoCache.removeLast());
+    if (redoCache.isNotEmpty) {
+      _canUndo = true;
+      undoCache.add(redoCache.removeLast());
+      allStrokes = redoCache.isNotEmpty ? redoCache.last : [];
+
+      if (redoCache.isEmpty) {
+        _canRedo = false;
+      }
     }
     notifyListeners();
   }
 
-  void clear() {
-    strokes.clear();
+  void clearBoard() {
+    undoCache.clear();
+    redoCache.clear();
+    _canUndo = false;
+    _canRedo = false;
+
+    allStrokes.clear();
 
     notifyListeners();
   }
 }
 
-final boardProvider = ChangeNotifierProvider((ref) => BoardProvider());
+final boardProvider = ChangeNotifierProvider((ref) => BoardProvider(
+    <Stroke>[],
+    null,
+    DrawMode.sketch,
+    GlobalKey(
+      debugLabel: 'canvas',
+    )));

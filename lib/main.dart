@@ -31,9 +31,7 @@ class _AppContextState extends State<AppContext> {
         highlightColor: Colors.transparent,
         hoverColor: Colors.transparent,
       ),
-      home: const Scaffold(
-        body: WhiteBoard(),
-      ),
+      home: const WhiteBoard(),
     );
   }
 }

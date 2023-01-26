@@ -1,10 +1,11 @@
 // create a floating toolbar
 
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:treboard/core/tool.dart';
+import 'package:treboard/models/draw_mode.dart';
 import 'package:treboard/providers/board_provider.dart';
-import 'package:treboard/widgets/color_bar.dart';
 
 class Toolbar extends ConsumerStatefulWidget {
   const Toolbar({super.key});
@@ -13,114 +14,186 @@ class Toolbar extends ConsumerStatefulWidget {
   ConsumerState<Toolbar> createState() => _ToolbarState();
 }
 
+class Tool {
+  final DrawMode tool;
+  final Icon icon;
+
+  Tool(this.tool, this.icon);
+}
+
 class _ToolbarState extends ConsumerState<Toolbar> {
-  List<bool> selected = [true, false, false, false];
+  // create dict of icons and their respective tool
+
+  List<Tool> tools = [
+// sketch, erase
+    Tool(DrawMode.sketch, const Icon(Icons.edit_outlined)),
+    Tool(DrawMode.erase, const Icon(Icons.delete_outline_outlined)),
+  ];
+
+  List<Tool> shapeTools = [
+    Tool(DrawMode.line, const Icon(Icons.horizontal_rule_outlined)),
+    Tool(DrawMode.circle, const Icon(Icons.circle_outlined)),
+    Tool(DrawMode.square, const Icon(Icons.crop_square_outlined)),
+  ];
+
+  bool isSketchToolsVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    List<Icon> buttons = [
-      Icon(ref.read(boardProvider).tool.getIcon()),
-      const Icon(Icons.delete_outline_outlined),
-      const Icon(Icons.format_shapes_outlined),
-      const Icon(Icons.cleaning_services_outlined),
-      // restart here then delete old code latger
-    ];
-    return Column(
+    // based on what the current tool is, set the selected button
+    List<bool> selected = List.filled(tools.length, false);
+    List<bool> shapeSelected = List.filled(shapeTools.length, false);
+
+    for (int i = 0; i < tools.length; i++) {
+      if (tools[i].tool == ref.watch(boardProvider).drawingMode) {
+        selected[i] = true;
+      }
+    }
+
+    for (int i = 0; i < shapeTools.length; i++) {
+      if (shapeTools[i].tool == ref.watch(boardProvider).drawingMode) {
+        shapeSelected[i] = true;
+      }
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
+        Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: ToggleButtons(
-              direction: Axis.vertical,
-              isSelected: selected,
-              onPressed: (index) {
-                setState(() {
-                  for (int i = 0; i < selected.length; i++) {
-                    selected[i] = i == index;
-
-                    if (index != 2) {
-                      ref.read(boardProvider).toggleFrame();
+              child: ToggleButtons(
+                  constraints:
+                      const BoxConstraints(minWidth: 50, minHeight: 50),
+                  direction: Axis.vertical,
+                  fillColor: Colors.grey[200],
+                  isSelected: selected,
+                  onPressed: (index) {
+                    // set the selected tool
+                    ref.read(boardProvider.notifier).setMode(tools[index].tool);
+                    // set the selected button
+                    for (int i = 0; i < selected.length; i++) {
+                      selected[i] = i == index;
                     }
-                  }
 
-                  if (index == 0) {
-                    ref.read(boardProvider).tool = PenTool();
-                  } else if (index == 1) {
-                    ref.read(boardProvider).tool = EraserTool();
-                  } else if (index == 2) {
-                    ref.read(boardProvider).tool = ExtractorTool();
-                    ref.read(boardProvider).extractText();
-                  } else if (index == 3) {
-                    ref.read(boardProvider.notifier).clear();
-                  }
-                });
-              },
-              children: buttons),
+                    setState(() {
+                      isSketchToolsVisible = index == 0;
+                      selected = selected;
+                    });
+                  },
+                  children: tools
+                      .map((tool) => Container(
+                            child: tool.icon,
+                          ))
+                      .toList()),
+            ),
+            Container(
+              width: 50,
+              margin: const EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                  ),
+                ],
+              ),
+              // space between the two columns
+
+              child: Column(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.undo_outlined,
+                        color: ref.watch(boardProvider).canUndo
+                            ? Colors.black
+                            : Colors.grey),
+                    onPressed: () {
+                      // remove the last stroke
+
+                      ref.read(boardProvider.notifier).undo();
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.redo_outlined,
+                        color: ref.watch(boardProvider).canRedo
+                            ? Colors.black
+                            : Colors.grey),
+                    onPressed: () {
+                      // redo the last stroke
+                      ref.read(boardProvider.notifier).redo();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          transitionBuilder: (child, animation) {
+            return ScaleTransition(
+              scale: animation,
+              child: Container(
+                key: ValueKey(isSketchToolsVisible),
+                margin: const EdgeInsets.only(right: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Visibility(
+                  visible: isSketchToolsVisible,
+                  child: ToggleButtons(
+                      constraints:
+                          const BoxConstraints(minWidth: 50, minHeight: 50),
+                      direction: Axis.vertical,
+                      fillColor: Colors.grey[200],
+                      isSelected: shapeSelected,
+                      onPressed: (index) {
+                        // set the selected tool
+                        ref
+                            .read(boardProvider.notifier)
+                            .setMode(shapeTools[index].tool);
+
+                        // set the selected button
+                        for (int i = 0; i < shapeSelected.length; i++) {
+                          shapeSelected[i] = i == index;
+                        }
+                      },
+                      children: shapeTools
+                          .map((tool) => Container(
+                                child: tool.icon,
+                              ))
+                          .toList()),
+                ),
               ),
-            ],
-          ),
-          // space between the two columns
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.undo_outlined),
-                onPressed: () {
-                  // remove the last stroke
-                  ref.read(boardProvider.notifier).undo();
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.redo_outlined),
-                onPressed: () {
-                  // redo the last stroke
-                  ref.read(boardProvider.notifier).redo();
-                },
-              ),
-            ],
-          ),
+            );
+          },
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          child: Slider(
-            value: ref.watch(boardProvider).penWidth,
-            min: 1,
-            max: 20,
-            divisions: 4,
-            onChanged: (value) {
-              // change on exponential scale
-              ref.read(boardProvider.notifier).setPenWidth(value);
-            },
-          ),
-        )
       ],
     );
   }

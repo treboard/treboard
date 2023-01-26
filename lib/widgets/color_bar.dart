@@ -17,17 +17,6 @@ List<PenColor> penColors = [
   PenColor(Colors.blue),
   PenColor(Colors.indigo),
   PenColor(Colors.purple),
-  PenColor(const Color.fromRGBO(255, 0, 255, 1)),
-  PenColor(const Color.fromRGBO(255, 0, 191, 1)),
-  PenColor(const Color.fromRGBO(255, 0, 127, 1)),
-  PenColor(const Color.fromRGBO(255, 0, 63, 1)),
-  PenColor(const Color.fromRGBO(255, 0, 0, 1)),
-  PenColor(const Color.fromRGBO(255, 63, 0, 1)),
-  PenColor(const Color.fromRGBO(255, 127, 0, 1)),
-  PenColor(const Color.fromRGBO(255, 191, 0, 1)),
-  PenColor(const Color.fromRGBO(255, 255, 0, 1)),
-  PenColor(const Color.fromRGBO(191, 255, 0, 1)),
-  PenColor(const Color.fromRGBO(127, 255, 0, 1)),
   PenColor(Colors.white),
 ];
 
@@ -60,8 +49,9 @@ class _ColorBarState extends ConsumerState<ColorBar> {
               top: 10.0, bottom: 10.0, left: 5.0, right: 5.0),
           child: Container(
             decoration: BoxDecoration(
+              color: Colors.white,
               border: Border.all(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withOpacity(0.9),
                 width: 2.0,
               ),
               borderRadius: BorderRadius.circular(50),
