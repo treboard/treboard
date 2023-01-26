@@ -90,6 +90,7 @@ class Stroke extends CanvasElement {
 
 enum DrawType {
   sketch,
+  erase,
   line,
   circle,
   square,

@@ -90,8 +90,6 @@ class _ToolbarState extends ConsumerState<Toolbar> {
 
                     setState(() {
                       isSketchToolsVisible = index == 0;
-                    });
-                    setState(() {
                       selected = selected;
                     });
                   },
@@ -145,44 +143,56 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             ),
           ],
         ),
-        Container(
-          margin: const EdgeInsets.only(left: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Visibility(
-            visible: isSketchToolsVisible,
-            child: ToggleButtons(
-                constraints: const BoxConstraints(minWidth: 50, minHeight: 50),
-                direction: Axis.vertical,
-                fillColor: Colors.grey[200],
-                isSelected: shapeSelected,
-                onPressed: (index) {
-                  // set the selected tool
-                  ref
-                      .read(boardProvider.notifier)
-                      .setMode(shapeTools[index].tool);
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          transitionBuilder: (child, animation) {
+            return ScaleTransition(
+              scale: animation,
+              child: Container(
+                key: ValueKey(isSketchToolsVisible),
+                margin: const EdgeInsets.only(right: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Visibility(
+                  visible: isSketchToolsVisible,
+                  child: ToggleButtons(
+                      constraints:
+                          const BoxConstraints(minWidth: 50, minHeight: 50),
+                      direction: Axis.vertical,
+                      fillColor: Colors.grey[200],
+                      isSelected: shapeSelected,
+                      onPressed: (index) {
+                        // set the selected tool
+                        ref
+                            .read(boardProvider.notifier)
+                            .setMode(shapeTools[index].tool);
 
-                  // set the selected button
-                  for (int i = 0; i < shapeSelected.length; i++) {
-                    shapeSelected[i] = i == index;
-                  }
-                },
-                children: shapeTools
-                    .map((tool) => Container(
-                          child: tool.icon,
-                        ))
-                    .toList()),
-          ),
+                        // set the selected button
+                        for (int i = 0; i < shapeSelected.length; i++) {
+                          shapeSelected[i] = i == index;
+                        }
+                      },
+                      children: shapeTools
+                          .map((tool) => Container(
+                                child: tool.icon,
+                              ))
+                          .toList()),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

@@ -154,6 +154,13 @@ class Painter extends CustomPainter {
         case DrawType.sketch:
           canvas.drawPath(path, paint);
           break;
+        case DrawType.erase:
+          canvas.drawPath(
+              path,
+              paint
+                ..color = Colors.white
+                ..strokeWidth = 20);
+          break;
 
         case DrawType.line:
           canvas.drawLine(p1, p2, paint);
