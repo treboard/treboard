@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/models/draw_mode.dart';
+
 import 'package:treboard/providers/board_provider.dart';
 
 import '../models/stroke.dart';
@@ -41,9 +41,13 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
           ..add(details.localPosition);
     ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
-          color: ref.read(boardProvider).penColor,
+          color: ref.read(boardProvider).drawingMode == DrawMode.erase
+              ? ref.read(boardProvider).canvasColor
+              : ref.read(boardProvider).penColor,
           points: points,
-          width: ref.read(boardProvider).penWidth,
+          width: ref.read(boardProvider).drawingMode == DrawMode.erase
+              ? ref.read(boardProvider).eraserWidth
+              : ref.read(boardProvider).penWidth,
         ),
         ref.read(boardProvider).drawingMode));
   }
@@ -53,15 +57,15 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
     if (details.buttons != kPrimaryMouseButton) return;
     ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
-          color: ref.read(boardProvider).penColor,
+          color: ref.read(boardProvider).drawingMode == DrawMode.erase
+              ? ref.read(boardProvider).canvasColor
+              : ref.read(boardProvider).penColor,
           points: [details.localPosition],
-          width: ref.read(boardProvider).penWidth,
+          width: ref.read(boardProvider).drawingMode == DrawMode.erase
+              ? ref.read(boardProvider).eraserWidth
+              : ref.read(boardProvider).penWidth,
         ),
         ref.read(boardProvider).drawingMode));
-
-    ref
-        .read(boardProvider)
-        .setCurrentStroke(ref.read(boardProvider).currentStroke);
   }
 
   void onPointerUp(PointerUpEvent details) {
@@ -156,13 +160,6 @@ class Painter extends CustomPainter {
       switch (stroke.type) {
         case DrawType.sketch:
           canvas.drawPath(path, paint);
-          break;
-        case DrawType.erase:
-          canvas.drawPath(
-              path,
-              paint
-                ..color = Colors.white
-                ..strokeWidth = 20);
           break;
 
         case DrawType.line:

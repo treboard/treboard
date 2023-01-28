@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:treboard/models/stroke_models.dart';
 import 'package:treboard/providers/board_provider.dart';
 import 'package:treboard/providers/node_provider.dart';
 import 'package:treboard/widgets/board_canvas.dart';
@@ -44,6 +43,15 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
             LogicalKeyboardKey.keyZ,
             control: true,
           ): () => ref.read(boardProvider).undo(),
+          const SingleActivator(
+            LogicalKeyboardKey.keyY,
+            control: true,
+          ): () => ref.read(boardProvider).redo(),
+          const SingleActivator(
+            LogicalKeyboardKey.keyZ,
+            shift: true,
+            control: true,
+          ): () => ref.read(boardProvider).redo(),
         },
         key: const ValueKey('shortcutHandler'),
         child: Focus(
