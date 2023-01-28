@@ -1,7 +1,3 @@
-// create a floating toolbar
-
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/models/draw_mode.dart';
@@ -16,7 +12,7 @@ class Toolbar extends ConsumerStatefulWidget {
 
 class Tool {
   final DrawMode tool;
-  final Icon icon;
+  Icon icon;
 
   Tool(this.tool, this.icon);
 }
@@ -28,9 +24,11 @@ class _ToolbarState extends ConsumerState<Toolbar> {
 // sketch, erase
     Tool(DrawMode.sketch, const Icon(Icons.edit_outlined)),
     Tool(DrawMode.erase, const Icon(Icons.delete_outline_outlined)),
+    Tool(DrawMode.clear, const Icon(Icons.clear_outlined)),
   ];
 
   List<Tool> shapeTools = [
+    Tool(DrawMode.sketch, const Icon(Icons.edit_outlined)),
     Tool(DrawMode.line, const Icon(Icons.horizontal_rule_outlined)),
     Tool(DrawMode.circle, const Icon(Icons.circle_outlined)),
     Tool(DrawMode.square, const Icon(Icons.crop_square_outlined)),
@@ -53,6 +51,14 @@ class _ToolbarState extends ConsumerState<Toolbar> {
     for (int i = 0; i < shapeTools.length; i++) {
       if (shapeTools[i].tool == ref.watch(boardProvider).drawingMode) {
         shapeSelected[i] = true;
+
+        // if the current tool is a shape tool, change the sketch tool icon to that
+        // tool
+        if (ref.watch(boardProvider).drawingMode != DrawMode.sketch) {
+          tools[0].icon = shapeTools[i].icon;
+        } else {
+          tools[0].icon = const Icon(Icons.edit_outlined);
+        }
       }
     }
 
@@ -82,10 +88,17 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                   isSelected: selected,
                   onPressed: (index) {
                     // set the selected tool
-                    ref.read(boardProvider.notifier).setMode(tools[index].tool);
-                    // set the selected button
-                    for (int i = 0; i < selected.length; i++) {
-                      selected[i] = i == index;
+                    if (tools[index].tool != DrawMode.clear) {
+                      ref
+                          .read(boardProvider.notifier)
+                          .setMode(tools[index].tool);
+                    } else {
+                      ref.read(boardProvider).clearBoard();
+                    }
+                    // set the selected button if not the sketch tool
+                    if (index != 0) {
+                      selected = List.filled(tools.length, false);
+                      selected[index] = true;
                     }
 
                     setState(() {
@@ -119,13 +132,14 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.undo_outlined,
-                        color: ref.watch(boardProvider).canUndo
+                        color: ref.read(boardProvider).allStrokes.isNotEmpty
                             ? Colors.black
                             : Colors.grey),
                     onPressed: () {
                       // remove the last stroke
-
-                      ref.read(boardProvider.notifier).undo();
+                      ref.read(boardProvider).allStrokes.isNotEmpty
+                          ? ref.read(boardProvider).undo()
+                          : null;
                     },
                   ),
                   IconButton(
@@ -135,7 +149,9 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                             : Colors.grey),
                     onPressed: () {
                       // redo the last stroke
-                      ref.read(boardProvider.notifier).redo();
+                      ref.watch(boardProvider).canRedo
+                          ? ref.read(boardProvider).redo()
+                          : null;
                     },
                   ),
                 ],
@@ -143,56 +159,44 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             ),
           ],
         ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeIn,
-          switchOutCurve: Curves.easeOut,
-          transitionBuilder: (child, animation) {
-            return ScaleTransition(
-              scale: animation,
-              child: Container(
-                key: ValueKey(isSketchToolsVisible),
-                margin: const EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Visibility(
-                  visible: isSketchToolsVisible,
-                  child: ToggleButtons(
-                      constraints:
-                          const BoxConstraints(minWidth: 50, minHeight: 50),
-                      direction: Axis.vertical,
-                      fillColor: Colors.grey[200],
-                      isSelected: shapeSelected,
-                      onPressed: (index) {
-                        // set the selected tool
-                        ref
-                            .read(boardProvider.notifier)
-                            .setMode(shapeTools[index].tool);
-
-                        // set the selected button
-                        for (int i = 0; i < shapeSelected.length; i++) {
-                          shapeSelected[i] = i == index;
-                        }
-                      },
-                      children: shapeTools
-                          .map((tool) => Container(
-                                child: tool.icon,
-                              ))
-                          .toList()),
-                ),
+        Container(
+          margin: const EdgeInsets.only(left: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 2),
               ),
-            );
-          },
+            ],
+          ),
+          child: Visibility(
+            visible: isSketchToolsVisible,
+            child: ToggleButtons(
+                constraints: const BoxConstraints(minWidth: 50, minHeight: 50),
+                direction: Axis.vertical,
+                fillColor: Colors.grey[200],
+                isSelected: shapeSelected,
+                onPressed: (index) {
+                  // set the selected tool
+                  ref
+                      .read(boardProvider.notifier)
+                      .setMode(shapeTools[index].tool);
+
+                  // set the selected button
+                  for (int i = 0; i < shapeSelected.length; i++) {
+                    shapeSelected[i] = i == index;
+                  }
+                },
+                children: shapeTools
+                    .map((tool) => Container(
+                          child: tool.icon,
+                        ))
+                    .toList()),
+          ),
         ),
       ],
     );

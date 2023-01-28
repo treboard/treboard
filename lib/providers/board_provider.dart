@@ -16,17 +16,15 @@ class BoardProvider extends ChangeNotifier {
   Stroke? currentStroke;
   DrawMode drawingMode;
 
-  List<List<Stroke>> undoCache = [];
-  List<List<Stroke>> redoCache = [];
+  List<Stroke> redoCache = [];
 
-  bool _canRedo = false;
-  bool _canUndo = false;
+  int maxUndo = 10;
+  int strokeCount = 0;
 
   GlobalKey canvasGlobalKey;
 
-  bool get canRedo => _canRedo;
-  bool get canUndo => _canUndo;
-
+  bool _canRedo = false;
+  get canRedo => _canRedo;
 // default to center
   Rect? frameRect;
 
@@ -53,13 +51,11 @@ class BoardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setAllStrokes(List<Stroke> strokes) {
-    allStrokes = strokes;
-    undoCache.add(allStrokes);
+  void addStroke() {
+    allStrokes = List<Stroke>.from(allStrokes)..add(currentStroke!);
+    currentStroke = null;
     redoCache.clear();
-    _canUndo = true;
     _canRedo = false;
-
     notifyListeners();
   }
 
@@ -100,38 +96,30 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void undo() {
-    if (undoCache.isNotEmpty) {
+    final strokes = List<Stroke>.from(allStrokes);
+    if (strokes.isNotEmpty) {
+      redoCache.add(strokes.removeLast());
+      allStrokes = strokes;
       _canRedo = true;
-      redoCache.add(undoCache.removeLast());
-      allStrokes = undoCache.isNotEmpty ? undoCache.last : [];
-
-      if (undoCache.isEmpty) {
-        _canUndo = false;
-      }
+      currentStroke = null;
     }
     notifyListeners();
   }
 
   void redo() {
     if (redoCache.isNotEmpty) {
-      _canUndo = true;
-      undoCache.add(redoCache.removeLast());
-      allStrokes = redoCache.isNotEmpty ? redoCache.last : [];
+      final stroke = redoCache.removeLast();
 
-      if (redoCache.isEmpty) {
-        _canRedo = false;
-      }
+      _canRedo = redoCache.isNotEmpty;
+      allStrokes = [...allStrokes, stroke];
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   void clearBoard() {
-    undoCache.clear();
-    redoCache.clear();
-    _canUndo = false;
+    allStrokes = [];
     _canRedo = false;
-
-    allStrokes.clear();
+    currentStroke = null;
 
     notifyListeners();
   }

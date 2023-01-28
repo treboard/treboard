@@ -38,6 +38,10 @@ class Stroke extends CanvasElement {
           case DrawMode.square:
           case DrawMode.select:
             return DrawType.square;
+          case DrawMode.text:
+            return DrawType.sketch;
+          default:
+            return DrawType.sketch;
         }
       }(),
     );

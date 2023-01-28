@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +37,7 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
   void onPointerMove(PointerMoveEvent details, BuildContext context) {
     if (details.buttons != kPrimaryMouseButton) return;
     final points =
-        List<Offset>.from(ref.read(boardProvider).currentStroke!.points)
+        List<Offset>.from(ref.read(boardProvider).currentStroke?.points ?? [])
           ..add(details.localPosition);
     ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
@@ -50,19 +51,21 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
   void onPointerDown(PointerDownEvent details, BuildContext context) {
     // check if primaru button is pressed
     if (details.buttons != kPrimaryMouseButton) return;
-    ref.read(boardProvider).currentStroke = Stroke.fromDrawMode(
+    ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
           color: ref.read(boardProvider).penColor,
           points: [details.localPosition],
           width: ref.read(boardProvider).penWidth,
         ),
-        ref.read(boardProvider).drawingMode);
+        ref.read(boardProvider).drawingMode));
+
+    ref
+        .read(boardProvider)
+        .setCurrentStroke(ref.read(boardProvider).currentStroke);
   }
 
   void onPointerUp(PointerUpEvent details) {
-    ref.read(boardProvider).setAllStrokes(
-        List<Stroke>.from(ref.read(boardProvider).allStrokes)
-          ..add(ref.read(boardProvider).currentStroke!));
+    ref.read(boardProvider).addStroke();
   }
 
   Widget buildAllSketches(BuildContext context) {
@@ -72,7 +75,8 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
       child: RepaintBoundary(
         key: ref.watch(boardProvider).canvasGlobalKey,
         child: Container(
-          color: Colors.transparent,
+          width: widget.width,
+          height: widget.height,
           child: CustomPaint(
             painter: Painter(ref.watch(boardProvider).allStrokes),
           ),
@@ -146,7 +150,6 @@ class Painter extends CustomPainter {
         ..isAntiAlias = true
         ..color = stroke.color
         ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
         ..style = PaintingStyle.stroke
         ..strokeWidth = stroke.width;
 
@@ -165,6 +168,7 @@ class Painter extends CustomPainter {
         case DrawType.line:
           canvas.drawLine(p1, p2, paint);
           break;
+
         case DrawType.circle:
           canvas.drawOval(rect, paint);
           break;
@@ -176,5 +180,6 @@ class Painter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(Painter oldDelegate) => oldDelegate.strokes != strokes;
+  bool shouldRepaint(covariant Painter oldDelegate) =>
+      oldDelegate.strokes != strokes;
 }

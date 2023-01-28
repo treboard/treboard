@@ -35,7 +35,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetRef strokeRef = ref;
     ref.watch(nodeProvider).nodes;
 
     return Scaffold(
@@ -81,14 +80,17 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                       }
                     });
                   },
-                  child: Container(
+                  child: SizedBox(
                     width: double.maxFinite,
                     height: double.maxFinite,
                     child: GridPaper(
+                        color: Colors.grey.withOpacity(0.8),
+                        divisions: 2,
+                        interval: 1000,
                         child: BoardCanvas(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                    )),
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                        )),
                   ),
                 ),
               ),
