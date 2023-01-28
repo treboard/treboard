@@ -132,14 +132,13 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.undo_outlined,
-                        color: ref.watch(boardProvider).canUndo
+                        color: ref.read(boardProvider).allStrokes.isNotEmpty
                             ? Colors.black
                             : Colors.grey),
                     onPressed: () {
                       // remove the last stroke
-
-                      ref.read(boardProvider.notifier).allStrokes.isNotEmpty
-                          ? ref.read(boardProvider.notifier).undo()
+                      ref.read(boardProvider).allStrokes.isNotEmpty
+                          ? ref.read(boardProvider).undo()
                           : null;
                     },
                   ),
@@ -150,8 +149,8 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                             : Colors.grey),
                     onPressed: () {
                       // redo the last stroke
-                      ref.read(boardProvider).canRedo
-                          ? ref.read(boardProvider.notifier).redo()
+                      ref.watch(boardProvider).canRedo
+                          ? ref.read(boardProvider).redo()
                           : null;
                     },
                   ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,13 +51,13 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
   void onPointerDown(PointerDownEvent details, BuildContext context) {
     // check if primaru button is pressed
     if (details.buttons != kPrimaryMouseButton) return;
-    ref.read(boardProvider).currentStroke = Stroke.fromDrawMode(
+    ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
           color: ref.read(boardProvider).penColor,
           points: [details.localPosition],
           width: ref.read(boardProvider).penWidth,
         ),
-        ref.read(boardProvider).drawingMode);
+        ref.read(boardProvider).drawingMode));
 
     ref
         .read(boardProvider)
@@ -64,9 +65,7 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
   }
 
   void onPointerUp(PointerUpEvent details) {
-    ref.read(boardProvider).setAllStrokes(
-        List<Stroke>.from(ref.read(boardProvider).allStrokes)
-          ..add(ref.read(boardProvider).currentStroke!));
+    ref.read(boardProvider).addStroke();
   }
 
   Widget buildAllSketches(BuildContext context) {
@@ -151,7 +150,6 @@ class Painter extends CustomPainter {
         ..isAntiAlias = true
         ..color = stroke.color
         ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
         ..style = PaintingStyle.stroke
         ..strokeWidth = stroke.width;
 
