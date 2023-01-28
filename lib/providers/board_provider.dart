@@ -23,10 +23,14 @@ class BoardProvider extends ChangeNotifier {
 
   GlobalKey canvasGlobalKey;
 
+  Color canvasColor = Colors.white;
+  double eraserWidth = 10.0;
+
+  Rect? frameRect;
+
   bool _canRedo = false;
   get canRedo => _canRedo;
 // default to center
-  Rect? frameRect;
 
   BoardProvider(
     this.allStrokes,
