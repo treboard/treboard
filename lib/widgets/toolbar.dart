@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/models/draw_mode.dart';
 import 'package:treboard/providers/board_provider.dart';
+import 'package:carbon_icons/carbon_icons.dart';
 
 class Toolbar extends ConsumerStatefulWidget {
   const Toolbar({super.key});
@@ -23,7 +24,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
   List<Tool> tools = [
 // sketch, erase
     Tool(DrawMode.sketch, const Icon(Icons.edit_outlined)),
-    Tool(DrawMode.erase, const Icon(Icons.delete_outline_outlined)),
+    Tool(DrawMode.erase, const Icon(CarbonIcons.erase)),
     Tool(DrawMode.clear, const Icon(Icons.clear_outlined)),
   ];
 
@@ -81,6 +82,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                 ],
               ),
               child: ToggleButtons(
+                  selectedColor: Colors.red,
                   constraints:
                       const BoxConstraints(minWidth: 50, minHeight: 50),
                   direction: Axis.vertical,
@@ -93,7 +95,30 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                           .read(boardProvider.notifier)
                           .setMode(tools[index].tool);
                     } else {
-                      ref.read(boardProvider).clearBoard();
+                      // show popup to confirm clear
+
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: const Text('Clear Board'),
+                                content: const Text(
+                                    'Are you sure you want to clear the board?'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Cancel')),
+                                  TextButton(
+                                      style: TextButton.styleFrom(
+                                          foregroundColor: Colors.red),
+                                      onPressed: () {
+                                        ref
+                                            .read(boardProvider.notifier)
+                                            .clearBoard();
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Clear'))
+                                ],
+                              ));
                     }
                     // set the selected button if not the sketch tool
                     if (index != 0) {
