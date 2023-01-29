@@ -147,110 +147,118 @@ class _ResizableWindowState extends ConsumerState<ResizableWindow> {
               ),
             ),
             Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              child: GestureDetector(
-                onHorizontalDragUpdate: _onHorizontalDragLeft,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeLeftRight,
-                  opaque: true,
-                  child: Container(
-                    width: 4,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: GestureDetector(
+                  onHorizontalDragUpdate: _onHorizontalDragRight,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeLeftRight,
+                    opaque: true,
+                    child: Container(
+                      width: 4,
+                    ),
                   ),
-                ),
-              ),
-            ),
+                )),
+            // resizer for bottom right
             Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: GestureDetector(
-                onVerticalDragUpdate: _onHorizontalDragBottom,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpDown,
-                  opaque: true,
-                  child: Container(
-                    height: 4,
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: GestureDetector(
+                  onHorizontalDragUpdate: _onHorizontalDragLeft,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeLeftRight,
+                    opaque: true,
+                    child: Container(
+                      width: 4,
+                    ),
                   ),
-                ),
-              ),
-            ),
+                )),
             Positioned(
-              left: 0,
-              right: 0,
-              top: 0,
-              child: GestureDetector(
-                onVerticalDragUpdate: _onHorizontalDragTop,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpDown,
-                  opaque: true,
-                  child: Container(
-                    height: 4,
+                left: 0,
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onVerticalDragUpdate: _onHorizontalDragTop,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeUpDown,
+                    opaque: true,
+                    child: Container(
+                      height: 4,
+                    ),
                   ),
-                ),
-              ),
-            ),
+                )),
             Positioned(
-              right: 0,
-              bottom: 0,
-              child: GestureDetector(
-                onHorizontalDragUpdate: _onHorizontalDragBottomRight,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
-                  opaque: true,
-                  child: Container(
-                    width: 4,
-                    height: 4,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onVerticalDragUpdate: _onHorizontalDragBottom,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeUpDown,
+                    opaque: true,
+                    child: Container(
+                      height: 4,
+                    ),
                   ),
-                ),
-              ),
-            ),
+                )),
             Positioned(
-              left: 0,
-              bottom: 0,
-              child: GestureDetector(
-                onHorizontalDragUpdate: _onHorizontalDragBottomLeft,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpRightDownLeft,
-                  opaque: true,
-                  child: Container(
-                    width: 4,
-                    height: 4,
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onPanUpdate: _onHorizontalDragBottomRight,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                    opaque: true,
+                    child: Container(
+                      height: 6,
+                      width: 6,
+                    ),
                   ),
-                ),
-              ),
-            ),
+                )),
             Positioned(
-              right: 0,
-              top: 0,
-              child: GestureDetector(
-                onHorizontalDragUpdate: _onHorizontalDragTopRight,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpRightDownLeft,
-                  opaque: true,
-                  child: Container(
-                    width: 4,
-                    height: 4,
+                bottom: 0,
+                left: 0,
+                child: GestureDetector(
+                  onPanUpdate: _onHorizontalDragBottomLeft,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeUpRightDownLeft,
+                    opaque: true,
+                    child: Container(
+                      height: 6,
+                      width: 6,
+                    ),
                   ),
-                ),
-              ),
-            ),
+                )),
             Positioned(
-              left: 0,
-              top: 0,
-              child: GestureDetector(
-                onHorizontalDragUpdate: _onHorizontalDragTopLeft,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
-                  opaque: true,
-                  child: Container(
-                    width: 4,
-                    height: 4,
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onPanUpdate: _onHorizontalDragTopRight,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeUpRightDownLeft,
+                    opaque: true,
+                    child: Container(
+                      height: 6,
+                      width: 6,
+                    ),
                   ),
-                ),
-              ),
-            ),
+                )),
+            Positioned(
+                left: 0,
+                top: 0,
+                child: GestureDetector(
+                  onPanUpdate: _onHorizontalDragTopLeft,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                    opaque: true,
+                    child: Container(
+                      height: 6,
+                      width: 6,
+                    ),
+                  ),
+                )),
           ],
         ),
       ),
@@ -262,6 +270,10 @@ class _ResizableWindowState extends ConsumerState<ResizableWindow> {
       widget.currentWidth -= details.delta.dx;
       if (widget.currentWidth < widget.defaultWidth) {
         widget.currentWidth = widget.defaultWidth;
+      } else {
+        ref
+            .read(mdiProvider)
+            .updateWindowPosition(widget, Offset(details.delta.dx, 0));
       }
     });
   }
@@ -289,6 +301,10 @@ class _ResizableWindowState extends ConsumerState<ResizableWindow> {
       widget.currentHeight -= details.delta.dy;
       if (widget.currentHeight < widget.defaultHeight) {
         widget.currentHeight = widget.defaultHeight;
+      } else {
+        ref
+            .read(mdiProvider)
+            .updateWindowPosition(widget, Offset(0, details.delta.dy));
       }
     });
   }
