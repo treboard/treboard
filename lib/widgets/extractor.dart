@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/providers/node_provider.dart';
-import 'package:treboard/widgets/node.dart';
+import 'package:treboard/widgets/mdi.dart';
 import 'package:treboard/widgets/nodes/note.dart';
 import 'dart:ui' as ui;
 import '../providers/board_provider.dart';
@@ -47,9 +47,6 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
     Uint8List pngBytes = byteData!.buffer.asUint8List();
     //var text = await processOCR(pngBytes);
     var text = "not implemented yet";
-    ref.read(nodeProvider).addNode(CustomNode(
-        position: const Offset(50, 50),
-        child: Text(text, style: const TextStyle(fontSize: 20))));
   }
 
   // make not visible

@@ -1,46 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:treboard/providers/node_provider.dart';
+import 'package:treboard/models/embeddable.dart';
 
-// TODO: implement note
-// An expression is a widget that displays a textbox containing a note
-// for now, data is not persistent
-
-class Note extends StatefulWidget {
-  Note({
-    super.key,
-  });
+class Note extends StatefulWidget with Embeddable {
+  const Note({super.key});
 
   @override
-  _NoteState createState() => _NoteState();
+  State<Note> createState() => _NoteState();
+
+  @override
+  String get name => "Note";
 }
 
 class _NoteState extends State<Note> {
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        width: 200.0,
-        height: 200.0,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: const TextField(
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(10.0),
-            border: InputBorder.none,
-            hintText: 'New Note',
-          ),
-        ),
-      ),
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: const TextField(
+          decoration: InputDecoration(border: InputBorder.none),
+          textAlign: TextAlign.start,
+          expands: true,
+          maxLines: null,
+          style: TextStyle(
+            fontSize: 20,
+          )),
     );
   }
 }

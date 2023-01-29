@@ -56,6 +56,7 @@ class BoardProvider extends ChangeNotifier {
   }
 
   void addStroke() {
+    if (currentStroke == null) return;
     allStrokes = List<Stroke>.from(allStrokes)..add(currentStroke!);
     currentStroke = null;
     redoCache.clear();

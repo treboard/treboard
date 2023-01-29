@@ -1,10 +1,6 @@
-import 'package:treboard/widgets/node.dart';
+import 'package:treboard/widgets/mdi.dart';
 
 class Document {
-  Document({required this.nodes});
-
-  List<CustomNode> nodes = <CustomNode>[];
-
   void _saveDocument() {
     List<String> notes = [];
   }
