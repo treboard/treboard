@@ -28,7 +28,7 @@ List<Color> colors = [
 class CustomNode extends ConsumerStatefulWidget {
   CustomNode({super.key, required this.child, required this.position});
 
-  final Widget child;
+  Widget child;
   Offset position;
   Color color = colors[Random().nextInt(colors.length)];
 
@@ -70,7 +70,7 @@ class _CustomNodeState extends ConsumerState<CustomNode> {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Text('Note', textAlign: TextAlign.center),
+                Text('Untitled ', textAlign: TextAlign.center),
                 const Spacer(),
                 IconButton(
                   onPressed: () {
