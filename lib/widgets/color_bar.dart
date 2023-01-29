@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/providers/board_provider.dart';
 
 class PenColor {
-  PenColor(this.color);
+  const PenColor(this.color);
   final Color color;
 }
 
-List<PenColor> penColors = [
+const List<PenColor> penColors = [
 // set of 29 colors in rainbow order
   PenColor(Colors.black),
   PenColor(Colors.red),
@@ -59,14 +59,14 @@ class _ColorBarState extends ConsumerState<ColorBar> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                penColors.length,
-                (index) => colorCircle(
-                  penColors[index].color,
-                  ref.watch(boardProvider).penColor == penColors[index].color,
-                  onTap: () => _changeColor(penColors[index].color),
-                ),
-              ),
+              // Animated list of colors
+              children: penColors
+                  .map((color) => colorCircle(
+                        color.color,
+                        color.color == ref.watch(boardProvider).penColor,
+                        onTap: () => _changeColor(color.color),
+                      ))
+                  .toList(),
             ),
           )),
     );
