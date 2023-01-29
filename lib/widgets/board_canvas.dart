@@ -77,12 +77,12 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
       height: widget.height,
       width: widget.width,
       child: RepaintBoundary(
-        key: ref.watch(boardProvider).canvasGlobalKey,
+        key: ref.read(boardProvider).canvasGlobalKey,
         child: Container(
           width: widget.width,
           height: widget.height,
           child: CustomPaint(
-            painter: Painter(ref.watch(boardProvider).allStrokes),
+            painter: Painter(ref.read(boardProvider).allStrokes),
           ),
         ),
       ),

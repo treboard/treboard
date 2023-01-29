@@ -60,6 +60,8 @@ class BoardProvider extends ChangeNotifier {
     currentStroke = null;
     redoCache.clear();
     _canRedo = false;
+    strokeCount = allStrokes.length;
+
     notifyListeners();
   }
 
@@ -105,6 +107,7 @@ class BoardProvider extends ChangeNotifier {
       redoCache.add(strokes.removeLast());
       allStrokes = strokes;
       _canRedo = true;
+      strokeCount--;
       currentStroke = null;
     }
     notifyListeners();
@@ -113,6 +116,7 @@ class BoardProvider extends ChangeNotifier {
   void redo() {
     if (redoCache.isNotEmpty) {
       final stroke = redoCache.removeLast();
+      strokeCount++;
 
       _canRedo = redoCache.isNotEmpty;
       allStrokes = [...allStrokes, stroke];
@@ -122,6 +126,7 @@ class BoardProvider extends ChangeNotifier {
 
   void clearBoard() {
     allStrokes = [];
+    strokeCount = 0;
     _canRedo = false;
     currentStroke = null;
 

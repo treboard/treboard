@@ -34,8 +34,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(nodeProvider).nodes;
-
     return Scaffold(
       body: CallbackShortcuts(
         bindings: {
