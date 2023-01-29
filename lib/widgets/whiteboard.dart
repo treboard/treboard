@@ -5,7 +5,7 @@ import 'package:treboard/providers/node_provider.dart';
 import 'package:treboard/widgets/board_canvas.dart';
 import 'package:treboard/widgets/color_bar.dart';
 import 'package:treboard/widgets/extractor.dart';
-import 'package:treboard/widgets/node.dart';
+import 'package:treboard/widgets/mdi.dart';
 import 'package:treboard/widgets/toolbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/widgets/nodes/note.dart';
@@ -23,6 +23,8 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
   MouseCursor cursor = SystemMouseCursors.grab;
 
   Offset oldFocalPoint = Offset.zero;
+
+  MDIManager mdiManager = MDIManager();
 
   // CustomNodes include Text, Expression, Image, etc.
   // Only Text is implemented for now
@@ -77,12 +79,10 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                         ]).then((value) {
                       if (value == 1) {
                         // add a new CustomNode
-                        ref.read(nodeProvider).addNode(
-                              CustomNode(
-                                position: details.localPosition,
-                                child: Note(),
-                              ),
-                            );
+                        // not ready yet
+                        ref
+                            .read(mdiProvider)
+                            .addWindow(const Note(), details.localPosition);
                       }
                     });
                   },
@@ -102,7 +102,8 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               ),
 
               // display CustomNodes
-              ...ref.read(nodeProvider).nodes,
+              mdiManager,
+              //...ref.watch(nodeProvider).nodes,
               Positioned(
                 bottom: MediaQuery.of(context).size.height / 2 - (2 * 20 + 40),
                 left: 20,

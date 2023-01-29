@@ -27,6 +27,7 @@ class _AppContextState extends State<AppContext> {
       debugShowCheckedModeBanner: false,
       title: 'TreBoard',
       theme: ThemeData(
+        useMaterial3: true,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         hoverColor: Colors.transparent,
