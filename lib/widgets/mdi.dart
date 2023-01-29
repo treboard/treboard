@@ -106,7 +106,7 @@ class _ResizableWindowState extends ConsumerState<ResizableWindow> {
       width: widget.currentWidth,
       height: widget.currentHeight - 40.0,
       color: Colors.white,
-      child: Expanded(child: widget.embed ?? Container()),
+      child: widget.embed,
     );
   }
 

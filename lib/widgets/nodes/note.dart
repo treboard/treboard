@@ -16,8 +16,6 @@ class _NoteState extends State<Note> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
-      width: double.infinity,
-      height: double.infinity,
       child: const TextField(
           decoration: InputDecoration(border: InputBorder.none),
           textAlign: TextAlign.start,
