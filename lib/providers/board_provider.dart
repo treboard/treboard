@@ -25,7 +25,7 @@ class BoardProvider extends ChangeNotifier {
   GlobalKey canvasGlobalKey;
 
   Color canvasColor = Colors.white;
-  double eraserWidth = 10.0;
+  double eraserWidth = 30.0;
 
   Rect frameRect = Rect.zero;
 
