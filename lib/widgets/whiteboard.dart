@@ -82,7 +82,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                         // not ready yet
                         ref
                             .read(mdiProvider)
-                            .addWindow(const Note(), details.localPosition);
+                            .addWindow(Note(), details.localPosition);
                       }
                     });
                   },
@@ -112,7 +112,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
               const ColorBar(),
 
-              TextExtractor(),
               Positioned(
                 top: 20,
                 left:

@@ -19,5 +19,6 @@ Future<String> processOCR(Uint8List pngData) async {
   var response = await request.send();
   // get response
   var text = await response.stream.bytesToString();
+  print(jsonDecode(text)["text"]);
   return jsonDecode(text)["text"];
 }
