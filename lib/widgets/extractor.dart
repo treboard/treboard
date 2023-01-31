@@ -34,18 +34,9 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
       // crop relative to context size
       // make sure crop boundaries are within image boundaries
       // crop using _selectedRegion
-      bounds = Rect.fromPoints(
-        Offset(
-          max(0, bounds.left),
-          max(0, bounds.top),
-        ),
-        Offset(
-          min(image!.width.toDouble(), bounds.right),
-          min(image.height.toDouble(), bounds.bottom),
-        ),
-      );
+
       var cropped = img.copyCrop(
-        image,
+        image!,
         bounds.left.toInt(),
         bounds.top.toInt(),
         bounds.width.toInt(),
@@ -54,16 +45,21 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
 
       // return a Uint8List
       // convert _cropped to bytes as UInt8List
+
       return Uint8List.fromList(img.encodeBmp(cropped));
     }
 
     processImage() async {
-      ui.Image image = await widget.boundary!.toImage(pixelRatio: 0.1);
-      ByteData? byteData = await image.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
-
-      var pngBytesNew = crop(byteData!, _selectedRegion);
+      RenderRepaintBoundary boundary = ref
+          .watch(boardProvider)
+          .canvasGlobalKey
+          .currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      var pngBytesNew = byteData!.buffer.asUint8List();
+      var pngBytes = crop(byteData, _selectedRegion);
 
       ref.read(mdiProvider).addWindow(Image.memory(pngBytesNew), Offset.zero);
 

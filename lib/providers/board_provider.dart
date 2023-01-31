@@ -23,6 +23,8 @@ class BoardProvider extends ChangeNotifier {
   int strokeCount = 0;
 
   GlobalKey canvasGlobalKey;
+  TransformationController transformationController =
+      TransformationController();
 
   Color canvasColor = Colors.white;
   double eraserWidth = 30.0;
@@ -53,6 +55,22 @@ class BoardProvider extends ChangeNotifier {
       isFraming = false;
     }
     frameRect = Rect.zero;
+    notifyListeners();
+  }
+
+  void zoomIn() {
+    transformationController.value = Matrix4.identity()
+      ..translate(transformationController.value.getTranslation().x,
+          transformationController.value.getTranslation().y)
+      ..scale(1.1);
+    notifyListeners();
+  }
+
+  void zoomOut() {
+    transformationController.value = Matrix4.identity()
+      ..translate(transformationController.value.getTranslation().x,
+          transformationController.value.getTranslation().y)
+      ..scale(0.9);
     notifyListeners();
   }
 
