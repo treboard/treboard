@@ -65,13 +65,14 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
             children: [
               InteractiveViewer(
                 maxScale: maxScale,
+                minScale: initScale,
                 transformationController: _transformationController,
                 onInteractionUpdate: (details) {
                   // apply transformation
 
                   oldFocalPoint = details.focalPoint;
                   maxScale += clampDouble(
-                      details.scale - 1, -offsetThreshold, offsetThreshold);
+                      details.scale - 1, initScale, offsetThreshold);
                 },
                 child: GestureDetector(
                   onPanStart: (details) {},
@@ -100,9 +101,10 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                       }
                     });
                   },
-                  child: SizedBox(
+                  child: Container(
                     width: double.maxFinite,
                     height: double.maxFinite,
+                    color: ref.watch(boardProvider).canvasColor,
                     child: GridPaper(
                         color: Colors.grey.withOpacity(0.8),
                         divisions: 2,
