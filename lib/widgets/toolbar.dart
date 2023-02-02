@@ -27,7 +27,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
     Tool(DrawMode.erase, const Icon(CarbonIcons.erase)),
     Tool(DrawMode.clear, const Icon(Icons.clear_outlined)),
     // tool for the text extractor for our AI model
-    Tool(DrawMode.extract, const Icon(Icons.camera_alt_outlined)),
+    // Tool(DrawMode.extract, const Icon(Icons.camera_alt_outlined)),
   ];
 
   List<Tool> shapeTools = [

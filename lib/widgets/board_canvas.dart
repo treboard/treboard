@@ -37,11 +37,12 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
         children: [
           buildAllSketches(context),
           buildCurrentPath(context),
-          RepaintBoundary(
+          /**RepaintBoundary(
             child: TextExtractor(
               boundary: canvasRenderObject,
             ),
           ),
+          */
         ],
       ),
     );

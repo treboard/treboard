@@ -84,7 +84,7 @@ class _TextExtractorState extends ConsumerState<TextExtractor> {
               child: ClipRect(
                 clipBehavior: Clip.hardEdge,
                 child: BackdropFilter(
-                  filter: ui.ImageFilter.erode(radiusX: 0.7, radiusY: 1.0),
+                  filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Container(
                     color: Colors.red.withOpacity(0.1),
                   ),
