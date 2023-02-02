@@ -26,6 +26,8 @@ class _ToolbarState extends ConsumerState<Toolbar> {
     Tool(DrawMode.sketch, const Icon(Icons.edit_outlined)),
     Tool(DrawMode.erase, const Icon(CarbonIcons.erase)),
     Tool(DrawMode.clear, const Icon(Icons.clear_outlined)),
+    // tool for the text extractor for our AI model
+    Tool(DrawMode.extract, const Icon(Icons.camera_alt_outlined)),
   ];
 
   List<Tool> shapeTools = [
@@ -90,6 +92,9 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                   isSelected: selected,
                   onPressed: (index) {
                     // set the selected tool
+                    if (tools[index].tool == DrawMode.extract) {
+                      ref.read(boardProvider.notifier).extractText();
+                    }
                     if (tools[index].tool != DrawMode.clear) {
                       ref
                           .read(boardProvider.notifier)

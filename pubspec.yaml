@@ -41,6 +41,8 @@ dependencies:
   http: ^0.13.5
   ffi: ^2.0.1
   carbon_icons: ^0.0.1+2
+  flutter_math_fork: ^0.6.3+1
+  image: ^3.3.0
 
 dev_dependencies:
   flutter_test:

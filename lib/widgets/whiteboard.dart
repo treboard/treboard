@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:treboard/providers/board_provider.dart';
@@ -19,12 +20,15 @@ class WhiteBoard extends ConsumerStatefulWidget {
 
 class _WhiteBoardState extends ConsumerState<WhiteBoard> {
   final initScale = 0.1;
+  double maxScale = 2;
   double offsetThreshold = 0.1;
   MouseCursor cursor = SystemMouseCursors.grab;
 
   Offset oldFocalPoint = Offset.zero;
 
   MDIManager mdiManager = MDIManager();
+
+  late TransformationController _transformationController;
 
   // CustomNodes include Text, Expression, Image, etc.
   // Only Text is implemented for now
@@ -36,6 +40,8 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   @override
   Widget build(BuildContext context) {
+    _transformationController =
+        ref.watch(boardProvider).transformationController;
     return Scaffold(
       body: CallbackShortcuts(
         bindings: {
@@ -58,7 +64,16 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
           child: Stack(
             children: [
               InteractiveViewer(
-                minScale: 0.1,
+                maxScale: maxScale,
+                minScale: initScale,
+                transformationController: _transformationController,
+                onInteractionUpdate: (details) {
+                  // apply transformation
+
+                  oldFocalPoint = details.focalPoint;
+                  maxScale += clampDouble(
+                      details.scale - 1, initScale, offsetThreshold);
+                },
                 child: GestureDetector(
                   onPanStart: (details) {},
                   onSecondaryTapDown: (details) {
@@ -82,13 +97,14 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                         // not ready yet
                         ref
                             .read(mdiProvider)
-                            .addWindow(const Note(), details.localPosition);
+                            .addWindow(Note(), details.localPosition);
                       }
                     });
                   },
-                  child: SizedBox(
+                  child: Container(
                     width: double.maxFinite,
                     height: double.maxFinite,
+                    color: ref.watch(boardProvider).canvasColor,
                     child: GridPaper(
                         color: Colors.grey.withOpacity(0.8),
                         divisions: 2,
@@ -112,7 +128,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
               const ColorBar(),
 
-              TextExtractor(),
               Positioned(
                 top: 20,
                 left:

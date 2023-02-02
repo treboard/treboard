@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:treboard/models/embeddable.dart';
 
 class Note extends StatefulWidget with Embeddable {
-  const Note({super.key});
+  String? content;
+  Note({super.key, this.content = ""});
 
   @override
   State<Note> createState() => _NoteState();

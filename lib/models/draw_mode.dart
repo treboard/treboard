@@ -1,1 +1,11 @@
-enum DrawMode { sketch, erase, select, line, circle, square, text, clear }
+enum DrawMode {
+  sketch,
+  erase,
+  select,
+  line,
+  circle,
+  square,
+  text,
+  clear,
+  extract
+}

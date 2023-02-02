@@ -1,9 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:treboard/models/draw_mode.dart';
 
 import 'package:treboard/providers/board_provider.dart';
+import 'package:treboard/widgets/extractor.dart';
 
 import '../models/stroke.dart';
 
@@ -21,6 +23,12 @@ class BoardCanvas extends ConsumerStatefulWidget {
 }
 
 class _BoardCanvasState extends ConsumerState<BoardCanvas> {
+  RenderRepaintBoundary? get canvasRenderObject => ref
+      .watch(boardProvider)
+      .canvasGlobalKey
+      .currentContext
+      ?.findRenderObject() as RenderRepaintBoundary?;
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -29,6 +37,11 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
         children: [
           buildAllSketches(context),
           buildCurrentPath(context),
+          RepaintBoundary(
+            child: TextExtractor(
+              boundary: canvasRenderObject,
+            ),
+          ),
         ],
       ),
     );

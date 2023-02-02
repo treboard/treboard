@@ -15,6 +15,7 @@ class BoardProvider extends ChangeNotifier {
   List<Stroke> allStrokes;
   Stroke? currentStroke;
   DrawMode drawingMode;
+  Color frameColor = Colors.black.withOpacity(0.2);
 
   List<Stroke> redoCache = [];
 
@@ -22,11 +23,13 @@ class BoardProvider extends ChangeNotifier {
   int strokeCount = 0;
 
   GlobalKey canvasGlobalKey;
+  TransformationController transformationController =
+      TransformationController();
 
   Color canvasColor = Colors.white;
-  double eraserWidth = 10.0;
+  double eraserWidth = 30.0;
 
-  Rect? frameRect;
+  Rect frameRect = Rect.zero;
 
   bool _canRedo = false;
   get canRedo => _canRedo;
@@ -51,7 +54,28 @@ class BoardProvider extends ChangeNotifier {
     if (isFraming) {
       isFraming = false;
     }
-    frameRect = null;
+    frameRect = Rect.zero;
+    notifyListeners();
+  }
+
+  void zoomIn() {
+    transformationController.value = Matrix4.identity()
+      ..translate(transformationController.value.getTranslation().x,
+          transformationController.value.getTranslation().y)
+      ..scale(1.1);
+    notifyListeners();
+  }
+
+  void zoomOut() {
+    transformationController.value = Matrix4.identity()
+      ..translate(transformationController.value.getTranslation().x,
+          transformationController.value.getTranslation().y)
+      ..scale(0.9);
+    notifyListeners();
+  }
+
+  void setFraming(bool isFraming) {
+    this.isFraming = isFraming;
     notifyListeners();
   }
 
@@ -83,7 +107,14 @@ class BoardProvider extends ChangeNotifier {
 
   // clear undoCache
   void setMode(DrawMode mode) {
+    if (mode == DrawMode.extract) {
+      extractText();
+    } else {
+      isFraming = false;
+    }
+
     drawingMode = mode;
+
     notifyListeners();
   }
 
