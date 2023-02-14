@@ -5,7 +5,7 @@ import 'package:treboard/providers/board_provider.dart';
 import 'package:treboard/providers/node_provider.dart';
 import 'package:treboard/widgets/board_canvas.dart';
 import 'package:treboard/widgets/color_bar.dart';
-import 'package:treboard/widgets/extractor.dart';
+
 import 'package:treboard/widgets/mdi.dart';
 import 'package:treboard/widgets/toolbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +66,10 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               InteractiveViewer(
                 maxScale: maxScale,
                 transformationController: _transformationController,
+                onInteractionStart: (details) {
+                  // change cursor
+                  cursor = SystemMouseCursors.grabbing;
+                },
                 onInteractionUpdate: (details) {
                   // apply transformation
 
