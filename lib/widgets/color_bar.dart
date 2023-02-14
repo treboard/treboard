@@ -49,12 +49,12 @@ class _ColorBarState extends ConsumerState<ColorBar> {
               top: 10.0, bottom: 10.0, left: 5.0, right: 5.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               border: Border.all(
                 color: Colors.black.withOpacity(0.9),
                 width: 2.0,
               ),
-              borderRadius: BorderRadius.circular(50),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,25 +71,27 @@ class _ColorBarState extends ConsumerState<ColorBar> {
           )),
     );
   }
-}
 
-Widget colorCircle(Color color, bool isSelected,
-    {required VoidCallback onTap}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.all(5.0),
-      margin: const EdgeInsets.all(5.0),
-      width: 40.0,
-      height: 40.0,
-      decoration: BoxDecoration(
-        color: color,
-        border: Border.all(
-          color: isSelected ? Colors.black : Colors.black.withOpacity(0.2),
-          width: 2.0,
+  Widget colorCircle(Color color, bool isSelected,
+      {required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(5.0),
+        margin: const EdgeInsets.all(5.0),
+        width: 40.0,
+        height: 40.0,
+        decoration: BoxDecoration(
+          color: color,
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Theme.of(context).canvasColor,
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(5),
         ),
-        borderRadius: BorderRadius.circular(50),
       ),
-    ),
-  );
+    );
+  }
 }

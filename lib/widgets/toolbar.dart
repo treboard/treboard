@@ -72,11 +72,11 @@ class _ToolbarState extends ConsumerState<Toolbar> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Theme.of(context).shadowColor.withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 2),
@@ -88,7 +88,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                   constraints:
                       const BoxConstraints(minWidth: 50, minHeight: 50),
                   direction: Axis.vertical,
-                  fillColor: Colors.grey[200],
+                  fillColor: Theme.of(context).cardColor,
                   isSelected: selected,
                   onPressed: (index) {
                     // set the selected tool
@@ -146,11 +146,11 @@ class _ToolbarState extends ConsumerState<Toolbar> {
               width: 50,
               margin: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Theme.of(context).shadowColor.withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 5,
                   ),
@@ -163,7 +163,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                   IconButton(
                     icon: Icon(Icons.undo_outlined,
                         color: ref.read(boardProvider).allStrokes.isNotEmpty
-                            ? Colors.black
+                            ? Theme.of(context).iconTheme.color
                             : Colors.grey),
                     onPressed: () {
                       // remove the last stroke
@@ -192,7 +192,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
         Container(
           margin: const EdgeInsets.only(left: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(
@@ -208,7 +208,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             child: ToggleButtons(
                 constraints: const BoxConstraints(minWidth: 50, minHeight: 50),
                 direction: Axis.vertical,
-                fillColor: Colors.grey[200],
+                fillColor: Theme.of(context).cardColor,
                 isSelected: shapeSelected,
                 onPressed: (index) {
                   // set the selected tool

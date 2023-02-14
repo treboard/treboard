@@ -138,7 +138,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                     MediaQuery.of(context).size.width / 2 - (2 * 20 + 200) / 2,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
