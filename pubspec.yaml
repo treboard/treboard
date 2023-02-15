@@ -43,6 +43,8 @@ dependencies:
   carbon_icons: ^0.0.1+2
   flutter_math_fork: ^0.6.3+1
   image: ^3.3.0
+  fl_chart: ^0.60.0
+  math_expressions: ^2.3.1
 
 dev_dependencies:
   flutter_test:

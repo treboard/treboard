@@ -13,9 +13,9 @@ class BoardCanvas extends ConsumerStatefulWidget {
   double width;
   double height;
   BoardCanvas({
+    super.key,
     required this.width,
     required this.height,
-    Key? key,
   });
 
   @override
@@ -49,7 +49,10 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
   }
 
   void onPointerMove(PointerMoveEvent details, BuildContext context) {
-    if (details.buttons != kPrimaryMouseButton) return;
+    if (details.buttons != kStylusContact) {
+      return;
+    }
+
     final points =
         List<Offset>.from(ref.read(boardProvider).currentStroke?.points ?? [])
           ..add(details.localPosition);
@@ -59,25 +62,31 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
               ? ref.read(boardProvider).canvasColor
               : ref.read(boardProvider).penColor,
           points: points,
-          width: ref.read(boardProvider).drawingMode == DrawMode.erase
-              ? ref.read(boardProvider).eraserWidth
-              : ref.read(boardProvider).penWidth,
+          width: (ref.read(boardProvider).drawingMode == DrawMode.erase
+                  ? ref.read(boardProvider).eraserWidth
+                  : ref.read(boardProvider).penWidth) *
+              (details.pressure > 0 ? details.pressure : 1),
         ),
         ref.read(boardProvider).drawingMode));
   }
 
   void onPointerDown(PointerDownEvent details, BuildContext context) {
     // check if primaru button is pressed
-    if (details.buttons != kPrimaryMouseButton) return;
+    if (details.buttons != kStylusContact &&
+        details.buttons != kPrimaryButton) {
+      return;
+    }
+
     ref.read(boardProvider).setCurrentStroke(Stroke.fromDrawMode(
         Stroke(
           color: ref.read(boardProvider).drawingMode == DrawMode.erase
               ? ref.read(boardProvider).canvasColor
               : ref.read(boardProvider).penColor,
           points: [details.localPosition],
-          width: ref.read(boardProvider).drawingMode == DrawMode.erase
-              ? ref.read(boardProvider).eraserWidth
-              : ref.read(boardProvider).penWidth,
+          width: (ref.read(boardProvider).drawingMode == DrawMode.erase
+                  ? ref.read(boardProvider).eraserWidth
+                  : ref.read(boardProvider).penWidth) *
+              (details.pressure > 0 ? details.pressure : 1),
         ),
         ref.read(boardProvider).drawingMode));
   }
@@ -92,7 +101,7 @@ class _BoardCanvasState extends ConsumerState<BoardCanvas> {
       width: widget.width,
       child: RepaintBoundary(
         key: ref.read(boardProvider).canvasGlobalKey,
-        child: Container(
+        child: SizedBox(
           width: widget.width,
           height: widget.height,
           child: CustomPaint(
@@ -174,6 +183,7 @@ class Painter extends CustomPainter {
       switch (stroke.type) {
         case DrawType.sketch:
           canvas.drawPath(path, paint);
+          //draw some circle representing the size
           break;
 
         case DrawType.line:

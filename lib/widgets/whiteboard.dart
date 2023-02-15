@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:treboard/providers/board_provider.dart';
 import 'package:treboard/providers/node_provider.dart';
 import 'package:treboard/widgets/board_canvas.dart';
@@ -9,7 +10,7 @@ import 'package:treboard/widgets/color_bar.dart';
 import 'package:treboard/widgets/mdi.dart';
 import 'package:treboard/widgets/toolbar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:treboard/widgets/nodes/note.dart';
+import 'package:treboard/widgets/nodes/nodes.dart';
 
 class WhiteBoard extends ConsumerStatefulWidget {
   const WhiteBoard({super.key});
@@ -84,6 +85,9 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                     // display context menu
 
                     showMenu(
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
                         context: context,
                         position: RelativeRect.fromLTRB(
                             details.globalPosition.dx,
@@ -95,29 +99,32 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                             value: 1,
                             child: Text('Add Note'),
                           ),
+                          PopupMenuItem(
+                            value: 2,
+                            child: Text("Add Plotter"),
+                          )
                         ]).then((value) {
-                      if (value == 1) {
-                        // add a new CustomNode
-                        // not ready yet
-                        ref
-                            .read(mdiProvider)
-                            .addWindow(Note(), details.localPosition);
+                      switch (value) {
+                        case 1:
+                          ref
+                              .read(mdiProvider)
+                              .addWindow(Note(), details.localPosition);
+                          break;
+                        case 2:
+                          ref.read(mdiProvider).addWindow(
+                              const Plotter(), details.localPosition);
+                          break;
                       }
                     });
                   },
                   child: Container(
-                    width: double.maxFinite,
-                    height: double.maxFinite,
-                    color: ref.watch(boardProvider).canvasColor,
-                    child: GridPaper(
-                        color: Colors.grey.withOpacity(0.8),
-                        divisions: 2,
-                        interval: 1000,
-                        child: BoardCanvas(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
-                        )),
-                  ),
+                      width: double.maxFinite,
+                      height: double.maxFinite,
+                      color: ref.watch(boardProvider).canvasColor,
+                      child: BoardCanvas(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                      )),
                 ),
               ),
 

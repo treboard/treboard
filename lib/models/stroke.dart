@@ -10,6 +10,8 @@ class Stroke extends CanvasElement {
   final double width;
   final DrawType type;
   final bool filled;
+  int pressure = 1;
+
   Stroke({
     required this.points,
     this.color = Colors.black,

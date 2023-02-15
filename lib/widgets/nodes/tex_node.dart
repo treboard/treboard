@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:treboard/models/embeddable.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
 class TexNode extends StatelessWidget {

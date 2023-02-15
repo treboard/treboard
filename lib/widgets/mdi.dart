@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:treboard/models/embeddable.dart';
 import 'package:treboard/providers/node_provider.dart';
 
 const List<Color> colors = [
@@ -54,9 +53,10 @@ class _MDIManagerState extends ConsumerState<MDIManager> {
 class ResizableWindow extends ConsumerStatefulWidget {
   String? title;
   Widget? embed;
-  final Color panelColor = colors[Random().nextInt(colors.length)];
-  double currentHeight = 400.0, defaultHeight = 400.0;
-  double currentWidth = 400.0, defaultWidth = 400.0;
+  //final Color panelColor = colors[Random().nextInt(colors.length)];
+  late Color panelColor;
+  double currentHeight = 600.0, defaultHeight = 600.0;
+  double currentWidth = 600.0, defaultWidth = 600.0;
   double x = 0.0;
   double y = 0.0;
 
@@ -83,9 +83,9 @@ class _ResizableWindowState extends ConsumerState<ResizableWindow> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              widget.title ?? "Untitled",
+              widget.title ?? "Untitled Window",
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 16.0,
               ),
             ),
@@ -112,6 +112,7 @@ class _ResizableWindowState extends ConsumerState<ResizableWindow> {
 
   @override
   Widget build(BuildContext context) {
+    widget.panelColor = Theme.of(context).cardColor;
     return Container(
       decoration: const BoxDecoration(
         //Here goes the same radius, u can put into a var or function
