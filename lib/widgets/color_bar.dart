@@ -49,11 +49,14 @@ class _ColorBarState extends ConsumerState<ColorBar> {
               top: 10.0, bottom: 10.0, left: 5.0, right: 5.0),
           child: Container(
             decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                ),
+              ],
               color: Colors.white,
-              border: Border.all(
-                color: Colors.black.withOpacity(0.9),
-                width: 2.0,
-              ),
               borderRadius: BorderRadius.circular(50),
             ),
             child: Row(

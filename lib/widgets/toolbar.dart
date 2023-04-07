@@ -84,11 +84,13 @@ class _ToolbarState extends ConsumerState<Toolbar> {
                 ],
               ),
               child: ToggleButtons(
-                  selectedColor: Colors.red,
+                  selectedColor: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(5),
                   constraints:
                       const BoxConstraints(minWidth: 50, minHeight: 50),
                   direction: Axis.vertical,
-                  fillColor: Colors.grey[200],
+                  fillColor: Theme.of(context).highlightColor,
+                  highlightColor: Theme.of(context).highlightColor,
                   isSelected: selected,
                   onPressed: (index) {
                     // set the selected tool
@@ -208,7 +210,7 @@ class _ToolbarState extends ConsumerState<Toolbar> {
             child: ToggleButtons(
                 constraints: const BoxConstraints(minWidth: 50, minHeight: 50),
                 direction: Axis.vertical,
-                fillColor: Colors.grey[200],
+                fillColor: Theme.of(context).highlightColor,
                 isSelected: shapeSelected,
                 onPressed: (index) {
                   // set the selected tool

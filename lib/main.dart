@@ -29,7 +29,7 @@ class _AppContextState extends State<AppContext> {
       theme: ThemeData(
         useMaterial3: true,
         splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
+        highlightColor: Colors.orangeAccent,
         hoverColor: Colors.transparent,
       ),
       home: const WhiteBoard(),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:treboard/providers/board_provider.dart';
@@ -28,8 +27,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   MDIManager mdiManager = MDIManager();
 
-  late TransformationController _transformationController;
-
   // CustomNodes include Text, Expression, Image, etc.
   // Only Text is implemented for now
   // Text is a widget that can be dragound the board
@@ -40,8 +37,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
 
   @override
   Widget build(BuildContext context) {
-    _transformationController =
-        ref.watch(boardProvider).transformationController;
     return Scaffold(
       body: CallbackShortcuts(
         bindings: {
@@ -62,21 +57,12 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
         key: const ValueKey('shortcutHandler'),
         child: Focus(
           child: Stack(
+            alignment: Alignment.center,
             children: [
               InteractiveViewer(
-                maxScale: maxScale,
-                minScale: initScale,
-                transformationController: _transformationController,
                 onInteractionStart: (details) {
                   // change cursor
                   cursor = SystemMouseCursors.grabbing;
-                },
-                onInteractionUpdate: (details) {
-                  // apply transformation
-
-                  oldFocalPoint = details.focalPoint;
-                  maxScale += clampDouble(
-                      details.scale - 1, initScale, offsetThreshold);
                 },
                 child: GestureDetector(
                   onPanStart: (details) {},
@@ -109,14 +95,10 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                     width: double.maxFinite,
                     height: double.maxFinite,
                     color: ref.watch(boardProvider).canvasColor,
-                    child: GridPaper(
-                        color: Colors.grey.withOpacity(0.8),
-                        divisions: 2,
-                        interval: 1000,
-                        child: BoardCanvas(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
-                        )),
+                    child: BoardCanvas(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                    ),
                   ),
                 ),
               ),
@@ -133,9 +115,8 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
               const ColorBar(),
 
               Positioned(
-                top: 20,
-                left:
-                    MediaQuery.of(context).size.width / 2 - (2 * 20 + 200) / 2,
+                bottom: MediaQuery.of(context).size.height / 2 - (2 * 20 + 40),
+                left: MediaQuery.of(context).size.width - 80,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -147,37 +128,43 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
                       ),
                     ],
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  // Pen width toolbar
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Slider(
-                        value: ref.watch(boardProvider).penWidth,
-                        min: 2,
-                        max: 20,
-                        divisions: 4,
-                        onChanged: (value) {
-                          // change on exponential scale
-                          ref.read(boardProvider.notifier).setPenWidth(value);
-                        },
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      // some circular container to represent the size of the pen
                       Container(
                         margin: const EdgeInsets.all(10),
-                        width: ref.watch(boardProvider).penWidth * 2,
-                        height: ref.watch(boardProvider).penWidth * 2,
+                        width: 30,
+                        height: 30,
                         decoration: BoxDecoration(
                           color: ref.watch(boardProvider).penColor,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.black,
-                            width: 1,
+                            width: 3,
                           ),
                         ),
                       ),
+                      RotatedBox(
+                        quarterTurns: -1,
+                        child: Slider(
+                          value: ref.watch(boardProvider).penWidth,
+                          min: 2,
+                          max: 20,
+                          divisions: 4,
+                          onChanged: (value) {
+                            // change on exponential scale
+                            ref.read(boardProvider.notifier).setPenWidth(value);
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      // vertical divider
+
+                      // some circular container to represent the color of the pen
                     ],
                   ),
                 ),
