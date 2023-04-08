@@ -23,8 +23,6 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
   double offsetThreshold = 0.1;
   MouseCursor cursor = SystemMouseCursors.grab;
 
-  Offset oldFocalPoint = Offset.zero;
-
   MDIManager mdiManager = MDIManager();
 
   // CustomNodes include Text, Expression, Image, etc.
@@ -60,6 +58,8 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
             alignment: Alignment.center,
             children: [
               InteractiveViewer(
+                minScale: 0.8,
+                maxScale: 5,
                 onInteractionStart: (details) {
                   // change cursor
                   cursor = SystemMouseCursors.grabbing;
