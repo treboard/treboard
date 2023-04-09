@@ -36,10 +36,15 @@ jobs:
     - name: Build for Linux
       run: flutter build linux
       
+    - name: Build for Windows
+      run: flutter build windows
+      
     - name: Create release
       uses: ncipollo/release-action@v1.12.0
       with:
-        artifacts: ./build/linux/runner/Release/*
+        artifacts: 
+          ./build/linux/*
+          ./build/windows/*
         tag: v1.0.${{ github.run_number }}
         name: Treboard Release v${{ github.sha }}
         body: 'Automated release for commit ${{ github.sha }}'
