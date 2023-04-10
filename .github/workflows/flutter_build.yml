@@ -54,7 +54,7 @@ jobs:
           flutter config --enable-windows-desktop
           flutter pub get
           flutter build windows
-          flutter pub run msix:create
+          flutter pub run msix:create --install-certificate false
       - name: Save Windows app
         uses: actions/upload-artifact@v3
         with:
