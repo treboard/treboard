@@ -116,7 +116,7 @@ jobs:
             Treboard-linux.zip
             Treboard-win.zip
             exec/win/Treboard.msix
-          # ExCode-mac.zip
+          # Treboard-mac.zip
 
           body_path: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
