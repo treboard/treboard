@@ -54,6 +54,7 @@ class _WhiteBoardState extends ConsumerState<WhiteBoard> {
         },
         key: const ValueKey('shortcutHandler'),
         child: Focus(
+          autofocus: true,
           child: Stack(
             alignment: Alignment.center,
             children: [
